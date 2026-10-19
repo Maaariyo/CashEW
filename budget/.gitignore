@@ -55,3 +55,7 @@ keystore.jks
 
 /.firebase
 .firebase/
+# Your own Firebase / Google OAuth configuration (see FIREBASE.md)
+firebase.env.json
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist

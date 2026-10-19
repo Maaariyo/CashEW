@@ -131,7 +131,9 @@ Future<bool> signInGoogle(
       ];
       googleSignIn = getPlatform() == PlatformOS.isIOS
           ? signIn.GoogleSignIn(
-              clientId: DefaultFirebaseOptions.currentPlatform.iosClientId,
+              clientId: DefaultFirebaseOptions.ios.iosClientId?.isEmpty == true
+                  ? null
+                  : DefaultFirebaseOptions.ios.iosClientId,
               scopes: scopes)
           : signIn.GoogleSignIn.standard(scopes: scopes);
       // googleSignIn?.currentUser?.clearAuthCache();
