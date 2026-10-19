@@ -6,6 +6,8 @@ import 'package:budget/pages/billSplitter.dart';
 import 'package:budget/pages/budgetsListPage.dart';
 import 'package:budget/pages/creditDebtTransactionsPage.dart';
 import 'package:budget/pages/editHomePage.dart';
+import 'package:budget/pages/dailyLogPage.dart';
+import 'package:budget/pages/trekTravelPage.dart';
 import 'package:budget/pages/editObjectivesPage.dart';
 import 'package:budget/pages/homePage/homePageNetWorth.dart';
 import 'package:budget/pages/objectivesListPage.dart';
@@ -285,6 +287,32 @@ class MorePages extends StatelessWidget {
                     openPage: CreditDebtTransactions(isCredit: null),
                     title: navBarIconsData["loans"]!.label.tr(),
                     icon: navBarIconsData["loans"]!.iconData,
+                    isOutlined: true,
+                  ),
+                ),
+              ],
+            ),
+          if (hasSideNavigation == false)
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Expanded(
+                  child: SettingsContainerOpenPage(
+                    openPage: TrekTravelPage(),
+                    title: "Trek & Travel",
+                    icon: appStateSettings["outlinedIcons"]
+                        ? Icons.hiking_outlined
+                        : Icons.hiking_rounded,
+                    isOutlined: true,
+                  ),
+                ),
+                Expanded(
+                  child: SettingsContainerOpenPage(
+                    openPage: DailyLogPage(),
+                    title: "Daily Log",
+                    icon: appStateSettings["outlinedIcons"]
+                        ? Icons.receipt_long_outlined
+                        : Icons.receipt_long_rounded,
                     isOutlined: true,
                   ),
                 ),

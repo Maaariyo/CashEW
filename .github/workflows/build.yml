@@ -36,6 +36,10 @@ jobs:
       - name: Analyze
         run: flutter analyze --no-fatal-infos --no-fatal-warnings
 
+      # widget_test.dart is upstream's unused counter template, so only CashEW's tests run
+      - name: Test
+        run: flutter test test/daily_log_test.dart
+
       # Optional: store your firebase.env.json contents in the
       # FIREBASE_ENV_JSON repository secret to enable Firestore features
       - name: Firebase config

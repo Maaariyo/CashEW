@@ -52,6 +52,42 @@ page, frosted-glass cards, app bars, date headers and navigation bar, and headin
 - All of it lives in `budget/lib/struct/bohoGlass.dart`, with small hooks in the theme, page
   framework, navigation bar and text widgets.
 
+## Trek & Travel
+
+*More Actions → Trek & Travel.* A trip has its own book of expenses, but every transaction in it is a
+normal transaction, so it still shows up in your accounts, the transactions list and your other budgets.
+
+- **Plan a trip** with a name, dates and a trip budget, or turn an existing "added transactions only"
+  budget into a trip.
+- While a trip is **active**, the Add Transaction page puts new transactions on it automatically
+  (change the budget chip to opt out). It stops after the trip's end date; *Pause* stops it earlier.
+- Each trip shows Cashew's budget card (tap it for categories, history and spending graphs) and has
+  its own **Daily log**.
+- Under the hood a trip is a budget that only counts transactions added to it. The list of trips is
+  kept in settings, which are stored in the database and included in backups, so there is no
+  database schema change.
+
+## Daily Log
+
+*More Actions → Daily Log* (all expenses) or *Daily log* on a trip (only that trip's expenses).
+There is one log per account (fund), and one block per day with logged expenses. Each block has a
+copy button, and *Copy all* / *Export* give every day of the account as text (oldest first, days
+separated by a blank line):
+
+
+
+- Amounts are plain numbers: no currency sign or thousands separators. Whole amounts have no
+  decimals, others use the account's decimals.
+- An activity's name is the transaction title, or its category if the title is empty.
+- Transfers and balance corrections are not listed as activities. Income isn't either, but both
+  count towards the balance.
+- **Balance** is the account's balance at the end of that day, including everything in the account
+  (also outside the trip). Only paid transactions count, as in the rest of the app.
+
+| Trek & Travel | Trip daily log | Daily Log |
+|---|---|---|
+| ![](docs/screenshots/trek-travel.jpg) | ![](docs/screenshots/trip-daily-log.jpg) | ![](docs/screenshots/daily-log.jpg) |
+
 ## How the paywall worked
 
 See [`docs/PAYWALL_ANALYSIS.md`](docs/PAYWALL_ANALYSIS.md) for the full write-up. In short, every

@@ -154,6 +154,8 @@ Future<Map<String, dynamic>> getDefaultPreferences() async {
     "appOpenedMinute": DateTime.now().minute,
     "materialYou": supportsSystemColor(),
     "bohoGlass": true,
+    "trekTravelTrips": [],
+    "trekTravelActiveTrip": null,
     "colorTintCategoryIcon": false,
     "sendTransactionsToServerQueue": {},
     "currentUserEmail": "",

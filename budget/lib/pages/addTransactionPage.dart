@@ -67,6 +67,7 @@ import 'package:budget/struct/linkHighlighter.dart';
 import 'package:budget/widgets/listItem.dart';
 import 'package:budget/widgets/outlinedButtonStacked.dart';
 import 'package:budget/widgets/tappableTextEntry.dart';
+import 'package:budget/struct/trekTravel.dart';
 
 //TODO
 //only show the tags that correspond to selected category
@@ -816,6 +817,17 @@ class _AddTransactionPageState extends State<AddTransactionPage>
       selectedBudgetPk = widget.selectedBudget!.budgetPk;
       selectedPayer = appStateSettings["currentUserEmail"];
       selectedBudgetIsShared = widget.selectedBudget!.sharedKey != null;
+    } else if (widget.transaction == null) {
+      // Trek & Travel: new transactions go to the active trip
+      getActiveTripForNewTransaction().then((Budget? trip) {
+        if (trip == null || mounted == false || selectedBudgetPk != null)
+          return;
+        setState(() {
+          selectedBudget = trip;
+          selectedBudgetPk = trip.budgetPk;
+          selectedBudgetIsShared = false;
+        });
+      });
     }
     if (widget.selectedObjective != null) {
       if (widget.selectedObjective?.type == ObjectiveType.loan) {
