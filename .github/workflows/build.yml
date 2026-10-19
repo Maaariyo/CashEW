@@ -1,0 +1,66 @@
+name: Build
+
+on:
+  push:
+    tags: ["v*"]
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: budget
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      # Upstream pins intl 0.18.1, which requires Flutter 3.19.x
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.19.6"
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+
+      # Optional: store your firebase.env.json contents in the
+      # FIREBASE_ENV_JSON repository secret to enable Firestore features
+      - name: Firebase config
+        env:
+          FIREBASE_ENV_JSON: ${{ secrets.FIREBASE_ENV_JSON }}
+        run: |
+          if [ -n "$FIREBASE_ENV_JSON" ]; then
+            echo "$FIREBASE_ENV_JSON" > firebase.env.json
+          else
+            echo "{}" > firebase.env.json
+          fi
+
+      - name: Build APK
+        run: flutter build apk --release --split-per-abi --dart-define-from-file=firebase.env.json
+
+      - name: Build universal APK
+        run: flutter build apk --release --dart-define-from-file=firebase.env.json
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cashew-ew-apk
+          path: budget/build/app/outputs/flutter-apk/*.apk
+
+      - name: Publish release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: budget/build/app/outputs/flutter-apk/*.apk
