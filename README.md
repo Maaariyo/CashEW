@@ -36,6 +36,22 @@ Material You theming, app links) is unchanged upstream code.
 The different application id means CashEW installs alongside Cashew. To move your data, use
 *Export Cashew Data File* (Settings → Import & Export) in Cashew, then *Import Cashew Data File* in CashEW.
 
+## Boho Glass design
+
+CashEW ships with its own look: an earthy bohemian palette (terracotta, mustard, sage, dusty rose,
+cream and cocoa), hand-drawn line art (rainbow arches, sun, leaves, mandala dots) painted behind every
+page, frosted-glass cards, app bars, date headers and navigation bar, and headings set in
+[Fraunces](https://github.com/undercasetype/Fraunces) (SIL Open Font License) with its soft axis turned up.
+
+| Home | Transactions | More | Dark |
+|---|---|---|---|
+| ![](docs/screenshots/home-light.jpg) | ![](docs/screenshots/transactions-light.jpg) | ![](docs/screenshots/more-light.jpg) | ![](docs/screenshots/transactions-dark.jpg) |
+
+- Turn it off in *Settings → Boho Glass* to get the original Cashew design back.
+- With *Battery Saver* on, the palette stays but blur and the decorated backdrop are skipped.
+- All of it lives in `budget/lib/struct/bohoGlass.dart`, with small hooks in the theme, page
+  framework, navigation bar and text widgets.
+
 ## How the paywall worked
 
 See [`docs/PAYWALL_ANALYSIS.md`](docs/PAYWALL_ANALYSIS.md) for the full write-up. In short, every

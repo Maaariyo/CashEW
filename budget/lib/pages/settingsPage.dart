@@ -487,6 +487,18 @@ class SettingsPageContent extends StatelessWidget {
             );
           },
         ),
+        SettingsContainerSwitch(
+          title: "Boho Glass",
+          description:
+              "Earthy bohemian colours and line art with frosted glass surfaces",
+          onSwitched: (value) {
+            updateSettings("bohoGlass", value, updateGlobalState: true);
+          },
+          initialValue: appStateSettings["bohoGlass"] != false,
+          icon: appStateSettings["outlinedIcons"]
+              ? Icons.spa_outlined
+              : Icons.spa_rounded,
+        ),
         getPlatform() == PlatformOS.isIOS
             ? SizedBox.shrink()
             : SettingsContainerSwitch(

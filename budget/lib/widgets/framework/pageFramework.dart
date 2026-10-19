@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:budget/colors.dart';
 import 'package:budget/widgets/pullDownToRefreshSync.dart';
 import 'package:flutter/services.dart';
+import 'package:budget/struct/bohoGlass.dart';
 
 ValueNotifier<bool> isSwipingToDismissPageDown = ValueNotifier<bool>(false);
 ValueNotifier<bool> callRefreshToPages = ValueNotifier<bool>(false);
@@ -481,7 +482,8 @@ class PageFrameworkState extends State<PageFramework>
 
     Widget scaffold = Scaffold(
       resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
-      backgroundColor: widget.backgroundColor,
+      backgroundColor:
+          bohoGlassEnabled() ? Colors.transparent : widget.backgroundColor,
       body: widget.bodyBuilder != null
           ? widget.bodyBuilder!(
               _scrollController,
@@ -522,6 +524,9 @@ class PageFrameworkState extends State<PageFramework>
               ],
             ),
     );
+    // Each page paints its own backdrop so pages don't show through each other
+    scaffold = BohoBackground(child: scaffold);
+
     Widget? dragDownToDismissScaffold = null;
     if (widget.dragDownToDismiss) {
       dragDownToDismissScaffold = Listener(
@@ -531,7 +536,9 @@ class PageFrameworkState extends State<PageFramework>
         behavior: HitTestBehavior.opaque,
         child: Stack(
           children: [
-            if (widget.transparentAppBar != true)
+            if (widget.transparentAppBar != true && bohoGlassEnabled())
+              BohoBackground()
+            else if (widget.transparentAppBar != true)
               ...getAppBarBackgroundColorLayers(
                 animationControllerOpacity: _animationControllerOpacity,
                 percent: null,
@@ -1046,6 +1053,9 @@ Color calculateAppBarBGColor({
   required Color? appBarBackgroundColor,
   required bool centeredTitleSmall,
 }) {
+  // The glass layer in getAppBarBackgroundColorLayers paints the bar instead
+  if (bohoGlassEnabled() && appBarBackgroundColor == null)
+    return Colors.transparent;
   Color appBarBGColorCalculated = appBarBackgroundColor == null
       ? Theme.of(context).colorScheme.secondaryContainer
       : appBarBackgroundColor;
@@ -1069,6 +1079,41 @@ List<Widget> getAppBarBackgroundColorLayers({
 }) {
   // animationControllerOpacity does from top:1 to bottom: 0
   // and to make it into a percent: we use (animationControllerOpacity.value - 0.5) / 0.5
+  if (bohoGlassEnabled() && appBarBackgroundColor == null) {
+    // Expanded: the backdrop shows through. Collapsed: frosted glass bar.
+    Widget glass = BohoGlass(
+      border: false,
+      child: Align(
+        alignment: AlignmentDirectional.bottomCenter,
+        child: Container(
+          height: 0.8,
+          color: bohoGlassBorder(Theme.of(context).brightness),
+        ),
+      ),
+    );
+    if (forceBackgroundColors) return [Positioned.fill(child: glass)];
+    if (animationControllerOpacity != null)
+      return [
+        Positioned.fill(
+          child: AnimatedBuilder(
+            animation: animationControllerOpacity,
+            builder: (_, child) => Opacity(
+              opacity: clampDouble(
+                  (animationControllerOpacity.value - 0.5) / 0.5, 0, 1),
+              child: child,
+            ),
+            child: glass,
+          ),
+        ),
+      ];
+    if (percent != null)
+      return [
+        Positioned.fill(
+          child: Opacity(opacity: clampDouble(percent, 0, 1), child: glass),
+        ),
+      ];
+    return [];
+  }
   Color appBarBGColorCalculated = calculateAppBarBGColor(
     context: context,
     appBarBackgroundColor: appBarBackgroundColor,

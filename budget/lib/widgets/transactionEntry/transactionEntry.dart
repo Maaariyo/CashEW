@@ -28,6 +28,7 @@ import 'package:budget/widgets/transactionEntry/swipeToSelectTransactions.dart';
 import 'package:budget/widgets/transactionEntry/transactionEntryAmount.dart';
 import 'package:budget/widgets/transactionEntry/transactionEntryNote.dart';
 import 'package:budget/widgets/transactionEntry/transactionEntryTag.dart';
+import 'package:budget/struct/bohoGlass.dart';
 
 ValueNotifier<Map<String, List<String>>> globalSelectedID =
     ValueNotifier<Map<String, List<String>>>({});
@@ -656,7 +657,9 @@ class TransactionEntry extends StatelessWidget {
                         ),
                       ),
                       closedColor: containerColor == null
-                          ? Theme.of(context).colorScheme.background
+                          ? bohoGlassEnabled()
+                              ? bohoGlassFill(Theme.of(context).brightness)
+                              : Theme.of(context).colorScheme.background
                           : containerColor,
                       button: (openContainer) {
                         return FlashingContainer(

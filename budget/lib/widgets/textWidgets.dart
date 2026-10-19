@@ -3,6 +3,7 @@ import 'package:budget/struct/settings.dart';
 import 'package:budget/widgets/util/contextMenu.dart';
 import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:budget/struct/bohoGlass.dart';
 
 // Don't use Inter or the offset
 Set<String> fallbackFontLocales = {
@@ -62,7 +63,7 @@ class TextFont extends StatelessWidget {
       }
     }
 
-    final TextStyle textStyle = TextStyle(
+    TextStyle textStyle = TextStyle(
       letterSpacing: letterSpacing,
       fontWeight: this.fontWeight,
       fontSize: this.fontSize,
@@ -86,6 +87,9 @@ class TextFont extends StatelessWidget {
             ]
           : [],
     );
+    bool bohoHeading = useBohoHeading(this.fontSize, this.fontWeight) &&
+        fallbackFontLocales.contains(appStateSettings["locale"]) == false;
+    if (bohoHeading) textStyle = bohoHeadingStyle(textStyle);
     Widget textWidget(textPassed) {
       return AnimatedDefaultTextStyle(
         duration: Duration(milliseconds: 200),
@@ -96,7 +100,8 @@ class TextFont extends StatelessWidget {
             this.fontSize *
                 (fallbackFontLocales.contains(appStateSettings["locale"]) ==
                             true ||
-                        appStateSettings["font"] != "Avenir"
+                        appStateSettings["font"] != "Avenir" ||
+                        bohoHeading
                     ? 0
                     : 0.1),
           ),

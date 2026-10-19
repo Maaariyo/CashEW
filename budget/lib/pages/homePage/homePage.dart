@@ -40,6 +40,7 @@ import 'package:budget/widgets/util/rightSideClipper.dart';
 import 'package:flutter/services.dart';
 import 'package:budget/widgets/util/checkWidgetLaunch.dart';
 import 'package:flutter/foundation.dart';
+import 'package:budget/struct/bohoGlass.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({
@@ -290,7 +291,9 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     // Wipe all remaining pixels off - sometimes graphics artifacts are left behind
                     Container(
                         height: 1,
-                        color: Theme.of(context).colorScheme.background),
+                        color: bohoGlassEnabled()
+                            ? Colors.transparent
+                            : Theme.of(context).colorScheme.background),
 
                     showWelcomeBanner
                         ? ConstrainedBox(
@@ -402,7 +405,9 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     // Wipe all remaining pixels off - sometimes graphics artifacts are left behind
                     Container(
                         height: 1,
-                        color: Theme.of(context).colorScheme.background),
+                        color: bohoGlassEnabled()
+                            ? Colors.transparent
+                            : Theme.of(context).colorScheme.background),
                   ],
                 ),
               ),

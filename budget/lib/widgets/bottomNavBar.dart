@@ -19,6 +19,7 @@ import 'package:flutter/material.dart'
     hide NavigationDestination, NavigationBar;
 import 'package:budget/colors.dart';
 import 'package:flutter/services.dart';
+import 'package:budget/struct/bohoGlass.dart';
 
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar(
@@ -112,16 +113,38 @@ class BottomNavBarState extends State<BottomNavBar> {
         widget.currentNavigationStackedIndex);
 
     if (getIsFullScreen(context)) return SizedBox.shrink();
+    Widget navBar = buildNavBar(context, navigationBarIndex);
+    if (bohoGlassEnabled() == false) return navBar;
+    return BohoGlass(
+      border: false,
+      blur: 22,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            height: 0.8,
+            color: bohoGlassBorder(Theme.of(context).brightness),
+          ),
+          navBar,
+        ],
+      ),
+    );
+  }
+
+  Widget buildNavBar(BuildContext context, int navigationBarIndex) {
+    bool boho = bohoGlassEnabled();
     if (getPlatform() == PlatformOS.isIOS) {
       return IntrinsicHeight(
         child: Container(
           decoration: BoxDecoration(
-            color: getBottomNavbarBackgroundColor(
-              colorScheme: Theme.of(context).colorScheme,
-              brightness: Theme.of(context).brightness,
-              lightDarkAccent: getColor(context, "lightDarkAccent"),
-            ),
-            boxShadow: boxShadowSharp(context),
+            color: boho
+                ? Colors.transparent
+                : getBottomNavbarBackgroundColor(
+                    colorScheme: Theme.of(context).colorScheme,
+                    brightness: Theme.of(context).brightness,
+                    lightDarkAccent: getColor(context, "lightDarkAccent"),
+                  ),
+            boxShadow: boho ? null : boxShadowSharp(context),
           ),
           padding: EdgeInsetsDirectional.only(
               top: 2,
@@ -213,20 +236,27 @@ class BottomNavBarState extends State<BottomNavBar> {
     // Android navbar
     return Container(
       decoration: BoxDecoration(
-        boxShadow: boxShadowSharp(context),
+        boxShadow: boho ? null : boxShadowSharp(context),
       ),
       child: NavigationBarTheme(
         data: NavigationBarThemeData(
-          backgroundColor: getBottomNavbarBackgroundColor(
-            colorScheme: Theme.of(context).colorScheme,
-            brightness: Theme.of(context).brightness,
-            lightDarkAccent: getColor(context, "lightDarkAccent"),
-          ),
+          backgroundColor: boho
+              ? Colors.transparent
+              : getBottomNavbarBackgroundColor(
+                  colorScheme: Theme.of(context).colorScheme,
+                  brightness: Theme.of(context).brightness,
+                  lightDarkAccent: getColor(context, "lightDarkAccent"),
+                ),
           surfaceTintColor: Colors.transparent,
-          indicatorColor: appStateSettings["materialYou"]
-              ? dynamicPastel(context, Theme.of(context).colorScheme.primary,
-                  amount: 0.6)
-              : null,
+          indicatorColor: boho
+              ? Theme.of(context).colorScheme.primary.withOpacity(
+                  Theme.of(context).brightness == Brightness.light
+                      ? 0.18
+                      : 0.28)
+              : appStateSettings["materialYou"]
+                  ? dynamicPastel(context, Theme.of(context).colorScheme.primary,
+                      amount: 0.6)
+                  : null,
           labelTextStyle: MaterialStateProperty.resolveWith((states) {
             if (states.contains(MaterialState.selected)) {
               return TextStyle(

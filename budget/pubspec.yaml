@@ -179,6 +179,9 @@ flutter:
         - asset: assets/fonts/AvenirLTStd-Black.otf
           weight: 700
     # Inter is the font family fallback
+    - family: Fraunces
+      fonts:
+        - asset: assets/fonts/Fraunces.ttf
     - family: Inter
       fonts:
         - asset: assets/fonts/Inter-Regular.ttf

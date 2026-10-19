@@ -3,6 +3,7 @@ import 'package:budget/widgets/animatedExpanded.dart';
 import 'package:budget/widgets/textWidgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sticky_header/src/widgets/sliver_sticky_header.dart';
+import 'package:budget/struct/bohoGlass.dart';
 
 class SliverStickyLabelDivider extends StatelessWidget {
   SliverStickyLabelDivider({
@@ -65,8 +66,19 @@ class StickyLabelDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (color == null && bohoGlassEnabled())
+      return BohoGlass(
+        border: false,
+        blur: 14,
+        child: buildLabel(context, Colors.transparent),
+      );
+    return buildLabel(context,
+        color == null ? Theme.of(context).colorScheme.background : color!);
+  }
+
+  Widget buildLabel(BuildContext context, Color color) {
     return Container(
-      color: color == null ? Theme.of(context).colorScheme.background : color,
+      color: color,
       padding: EdgeInsetsDirectional.symmetric(horizontal: 16, vertical: 5),
       alignment: AlignmentDirectional.centerStart,
       child: Row(

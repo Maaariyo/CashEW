@@ -1,10 +1,15 @@
 import 'dart:ui';
 
 import 'package:budget/functions.dart';
+import 'package:budget/struct/bohoGlass.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
+
+Color defaultTappableColor(BuildContext context) => bohoGlassEnabled()
+    ? Colors.transparent
+    : Theme.of(context).colorScheme.background;
 
 class Tappable extends StatelessWidget {
   Tappable({
@@ -40,7 +45,7 @@ class Tappable extends StatelessWidget {
         child: child,
         onTap: onTap,
         borderRadius: customBorderRadius ?? BorderRadius.circular(borderRadius),
-        color: color ?? Theme.of(context).colorScheme.background,
+        color: color ?? defaultTappableColor(context),
         onLongPress: onLongPress != null
             ? () {
                 if (getPlatform() == PlatformOS.isIOS)
@@ -53,7 +58,7 @@ class Tappable extends StatelessWidget {
     }
 
     Widget tappable = Material(
-      color: color ?? Theme.of(context).colorScheme.background,
+      color: color ?? defaultTappableColor(context),
       type: type,
       borderRadius:
           customBorderRadius ?? BorderRadiusDirectional.circular(borderRadius),
