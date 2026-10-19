@@ -27,6 +27,10 @@ registered with an OAuth client.
 A CI build signed with a throwaway debug key has a different SHA-1 every run, so set up the
 `KEYSTORE_*` secrets (see the README) before registering the SHA-1.
 
+For the web build, create a **Web application** OAuth client with your site as an authorised
+JavaScript origin and add `<meta name="google-signin-client_id" content="YOUR-CLIENT-ID">` to the
+`<head>` of `budget/web/index.html`.
+
 For iOS, create an **iOS** OAuth client for bundle id `io.github.maaariyo.cashewew`, put its client id
 in `GOOGLE_IOS_CLIENT_ID`, and replace `YOUR-IOS-CLIENT-ID` in `budget/ios/Runner/Info.plist` with
 the reversed client id.
