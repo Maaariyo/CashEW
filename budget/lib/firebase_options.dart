@@ -48,7 +48,7 @@ class DefaultFirebaseOptions {
 
   // CashEW does not ship the upstream developer's Firebase project. Features
   // backed by Firestore (shared budgets, in-app feedback) are off unless you
-  // provide your own project at build time, see FIREBASE.md:
+  // provide your own project at build time, see docs/FIREBASE.md:
   //   flutter build apk --dart-define-from-file=firebase.env.json
   static const String _projectId = String.fromEnvironment('FIREBASE_PROJECT_ID');
   static const String _messagingSenderId =

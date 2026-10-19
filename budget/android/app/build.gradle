@@ -24,7 +24,7 @@ if (flutterVersionName == null) {
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
-// Only needed when you supply your own Firebase project, see FIREBASE.md
+// Only needed when you supply your own Firebase project, see docs/FIREBASE.md
 if (file('google-services.json').exists()) {
     apply plugin: 'com.google.gms.google-services'
 }

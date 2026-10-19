@@ -48,6 +48,23 @@ jobs:
             echo "{}" > firebase.env.json
           fi
 
+      # Optional but recommended: a stable signing key so updates install over
+      # older builds and Google sign-in keeps a fixed SHA-1. Set the
+      # KEYSTORE_BASE64, KEYSTORE_PASSWORD, KEY_ALIAS and KEY_PASSWORD secrets.
+      # Without them every run is signed with a throwaway debug key.
+      - name: Signing key
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > android/app/release.jks
+            printf 'storeFile=release.jks\nstorePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n' \
+              "$KEYSTORE_PASSWORD" "$KEY_ALIAS" "$KEY_PASSWORD" > android/key.properties
+          fi
+
       - name: Build APK
         run: flutter build apk --release --split-per-abi --dart-define-from-file=firebase.env.json
 
