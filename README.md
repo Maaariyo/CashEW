@@ -74,7 +74,16 @@ There is one log per account (fund), and one block per day with logged expenses.
 copy button, and *Copy all* / *Export* give every day of the account as text (oldest first, days
 separated by a blank line):
 
+```
+16 ..... October .... Friday
+.
+.
+.
+250 ..... Taxi to airport
+1200.50 ..... Hotel
 
+Balance ..... 8549.50
+```
 
 - Amounts are plain numbers: no currency sign or thousands separators. Whole amounts have no
   decimals, others use the account's decimals.
