@@ -518,7 +518,7 @@ class SettingsPageContent extends StatelessWidget {
         SettingsContainerSwitch(
           title: "Boho Glass",
           description:
-              "Earthy bohemian colours and line art with frosted glass surfaces",
+              "Light: earthy bohemian colours and line art with frosted glass. Dark: soft-shadow night style with an ember accent",
           onSwitched: (value) {
             updateSettings("bohoGlass", value, updateGlobalState: true);
           },

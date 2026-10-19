@@ -115,6 +115,20 @@ class BottomNavBarState extends State<BottomNavBar> {
     if (getIsFullScreen(context)) return SizedBox.shrink();
     Widget navBar = buildNavBar(context, navigationBarIndex);
     if (bohoGlassEnabled() == false) return navBar;
+    if (bohoNight(Theme.of(context).brightness))
+      return DecoratedBox(
+        decoration: BoxDecoration(
+          color: BohoNightPalette.surface,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.45),
+              offset: Offset(0, -6),
+              blurRadius: 18,
+            ),
+          ],
+        ),
+        child: navBar,
+      );
     return BohoGlass(
       border: false,
       blur: 22,
@@ -248,11 +262,17 @@ class BottomNavBarState extends State<BottomNavBar> {
                   lightDarkAccent: getColor(context, "lightDarkAccent"),
                 ),
           surfaceTintColor: Colors.transparent,
+          iconTheme: boho && Theme.of(context).brightness == Brightness.dark
+              ? MaterialStateProperty.resolveWith((states) => IconThemeData(
+                    color: states.contains(MaterialState.selected)
+                        ? BohoNightPalette.emberLight
+                        : BohoNightPalette.textMuted,
+                  ))
+              : null,
           indicatorColor: boho
-              ? Theme.of(context).colorScheme.primary.withOpacity(
-                  Theme.of(context).brightness == Brightness.light
-                      ? 0.18
-                      : 0.28)
+              ? Theme.of(context).brightness == Brightness.light
+                  ? Theme.of(context).colorScheme.primary.withOpacity(0.18)
+                  : BohoNightPalette.raisedHigh
               : appStateSettings["materialYou"]
                   ? dynamicPastel(context, Theme.of(context).colorScheme.primary,
                       amount: 0.6)

@@ -658,7 +658,7 @@ class TransactionEntry extends StatelessWidget {
                       ),
                       closedColor: containerColor == null
                           ? bohoGlassEnabled()
-                              ? bohoGlassFill(Theme.of(context).brightness)
+                              ? bohoRowFill(Theme.of(context).brightness)
                               : Theme.of(context).colorScheme.background
                           : containerColor,
                       button: (openContainer) {

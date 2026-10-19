@@ -123,7 +123,8 @@ AppColors getAppColors(
 }
 
 AppColors getBohoAppColors({required Brightness brightness}) {
-  // Card surfaces are translucent so the backdrop frosts through them
+  // Light: translucent cards the backdrop frosts through. Dark: raised
+  // neumorphic surfaces
   Color glass = bohoGlassFill(brightness);
   return brightness == Brightness.light
       ? AppColors(
@@ -152,23 +153,23 @@ AppColors getBohoAppColors({required Brightness brightness}) {
       : AppColors(
           colors: {
             "white": Colors.black,
-            "black": Color(0xFFF6E7D8),
+            "black": BohoNightPalette.text,
             "textLight": appStateSettings["increaseTextContrast"]
-                ? Color(0xFFF6E7D8).withOpacity(0.7)
-                : Color(0xFFF6E7D8).withOpacity(0.45),
-            "lightDarkAccent": Color(0xFF2B211C),
+                ? Color(0xFFB9BCC2)
+                : BohoNightPalette.textMuted,
+            "lightDarkAccent": BohoNightPalette.inset,
             "lightDarkAccentHeavyLight": glass,
-            "canvasContainer": Color(0xFF30251F),
-            "lightDarkAccentHeavy": Color(0xFF4A3A31),
-            "shadowColor": Colors.black.withOpacity(0.45),
-            "shadowColorLight": Colors.transparent,
-            "unPaidUpcoming": Color(0xFF8CC3C4),
-            "unPaidOverdue": Color(0xFFC9A0C2),
-            "incomeAmount": Color(0xFFA9C784),
-            "expenseAmount": Color(0xFFEC9474),
-            "warningOrange": Color(0xFFE6B65E),
-            "starYellow": BohoPalette.mustard,
-            "dividerColor": Colors.white.withOpacity(0.07),
+            "canvasContainer": BohoNightPalette.inset,
+            "lightDarkAccentHeavy": Color(0xFF3B3E43),
+            "shadowColor": Colors.black.withOpacity(0.6),
+            "shadowColorLight": Colors.black.withOpacity(0.55),
+            "unPaidUpcoming": Color(0xFF7FB2C9),
+            "unPaidOverdue": Color(0xFFA99BF0),
+            "incomeAmount": BohoNightPalette.sage,
+            "expenseAmount": BohoNightPalette.emberLight,
+            "warningOrange": Color(0xFFF2A65A),
+            "starYellow": Color(0xFFF5C04A),
+            "dividerColor": Colors.white.withOpacity(0.05),
             "standardContainerColor": glass,
           },
         );
@@ -723,7 +724,7 @@ ThemeData getDarkTheme() {
     splashColor: getPlatform() == PlatformOS.isIOS
         ? Colors.transparent
         : bohoGlassEnabled()
-            ? BohoPalette.clay.withOpacity(0.12)
+            ? BohoNightPalette.ember.withOpacity(0.14)
             : appStateSettings["materialYou"]
                 ? darkenPastel(
                         lightenPastel(

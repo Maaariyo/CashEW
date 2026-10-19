@@ -26,6 +26,7 @@ import 'package:universal_html/html.dart' as html;
 import 'package:budget/struct/settings.dart';
 import 'package:budget/struct/currencyFunctions.dart';
 import 'package:budget/struct/randomConstants.dart';
+import 'package:budget/struct/bohoGlass.dart';
 
 extension CapExtension on String {
   String get capitalizeFirst =>
@@ -863,6 +864,7 @@ getTotalSubscriptions(AllWallets allWallets, SelectedSubscriptionsType type,
 
 List<BoxShadow> boxShadowGeneral(context) {
   if (appStateSettings["disableShadows"] == true) return [];
+  if (bohoNight(Theme.of(context).brightness)) return bohoNightShadow();
   return [
     BoxShadow(
       color: getColor(context, "shadowColorLight").withAlpha(30),
@@ -875,6 +877,8 @@ List<BoxShadow> boxShadowGeneral(context) {
 
 List<BoxShadow> boxShadowSharp(context) {
   if (appStateSettings["disableShadows"] == true) return [];
+  if (bohoNight(Theme.of(context).brightness))
+    return bohoNightShadow(depth: 0.45);
   return [
     BoxShadow(
       color: getColor(context, "shadowColorLight").withAlpha(30),

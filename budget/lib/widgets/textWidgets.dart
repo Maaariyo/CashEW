@@ -87,7 +87,8 @@ class TextFont extends StatelessWidget {
             ]
           : [],
     );
-    bool bohoHeading = useBohoHeading(this.fontSize, this.fontWeight) &&
+    bool bohoHeading = useBohoHeading(
+            this.fontSize, this.fontWeight, Theme.of(context).brightness) &&
         fallbackFontLocales.contains(appStateSettings["locale"]) == false;
     if (bohoHeading) textStyle = bohoHeadingStyle(textStyle);
     Widget textWidget(textPassed) {

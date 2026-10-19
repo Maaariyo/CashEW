@@ -38,19 +38,27 @@ The different application id means CashEW installs alongside Cashew. To move you
 
 ## Boho Glass design
 
-CashEW ships with its own look: an earthy bohemian palette (terracotta, mustard, sage, dusty rose,
-cream and cocoa), hand-drawn line art (rainbow arches, sun, leaves, mandala dots) painted behind every
-page, frosted-glass cards, app bars, date headers and navigation bar, and headings set in
-[Fraunces](https://github.com/undercasetype/Fraunces) (SIL Open Font License) with its soft axis turned up.
+CashEW ships with its own look, on by default, in two halves that follow the system or in-app
+light/dark setting:
 
-| Home | Transactions | More | Dark |
+- **Light: Boho Glass.** An earthy bohemian palette (terracotta, mustard, sage, dusty rose, cream),
+  hand-drawn line art (rainbow arches, sun, leaves, mandala dots) painted behind every page,
+  frosted-glass cards, app bars, date headers and navigation bar, and headings set in
+  [Fraunces](https://github.com/undercasetype/Fraunces) (SIL Open Font License) with its soft axis
+  turned up.
+- **Dark: Boho Night.** Soft-UI neumorphism: one flat charcoal surface, cards raised out of it with a
+  paired highlight and shadow, list rows flat on the surface, and a glowing ember accent (FAB,
+  selected tab, amounts). Budget colours are kept but toned down to a tint, and headings use the
+  regular app font.
+
+| Light | Light | Dark | Dark |
 |---|---|---|---|
-| ![](docs/screenshots/home-light.jpg) | ![](docs/screenshots/transactions-light.jpg) | ![](docs/screenshots/more-light.jpg) | ![](docs/screenshots/transactions-dark.jpg) |
+| ![](docs/screenshots/home-light.jpg) | ![](docs/screenshots/transactions-light.jpg) | ![](docs/screenshots/night-home.jpg) | ![](docs/screenshots/night-transactions.jpg) |
 
-- Turn it off in *Settings → Boho Glass* to get the original Cashew design back.
+- Turn it off in *Settings → Boho Glass* to get the original Cashew design back in both modes.
 - With *Battery Saver* on, the palette stays but blur and the decorated backdrop are skipped.
-- All of it lives in `budget/lib/struct/bohoGlass.dart`, with small hooks in the theme, page
-  framework, navigation bar and text widgets.
+- All of it lives in `budget/lib/struct/bohoGlass.dart`, with small hooks in the theme, shadow
+  helpers, page framework, navigation bar, FAB, budget card and text widgets.
 
 ## Trek & Travel
 
