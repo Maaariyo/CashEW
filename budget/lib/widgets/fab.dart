@@ -7,7 +7,7 @@ import 'package:budget/widgets/outlinedButtonStacked.dart';
 import 'package:budget/widgets/tappable.dart';
 import 'package:budget/widgets/textWidgets.dart';
 import 'package:flutter/material.dart';
-import 'package:budget/struct/bohoGlass.dart';
+import 'package:budget/skins/skin.dart';
 
 class AddFAB extends StatelessWidget {
   const AddFAB({
@@ -109,11 +109,11 @@ class FAB extends StatelessWidget {
     //         : blend(Theme.of(context).colorScheme.onSecondary,
     //             Theme.of(context).colorScheme.onPrimary,
     //             amount: 0.35);
-    bool glow = color == null &&
-        isOutlined == false &&
-        bohoNight(Theme.of(context).brightness);
+    List<BoxShadow>? skinShadow = color == null && isOutlined == false
+        ? activeSkin().fabShadow(Theme.of(context).brightness)
+        : null;
     Widget fab = OpenContainerNavigation(
-      closedElevation: glow ? 0 : 10,
+      closedElevation: skinShadow != null ? 0 : 10,
       borderRadius: borderRadius,
       closedColor: containerColor,
       button: (openContainer) {
@@ -166,11 +166,11 @@ class FAB extends StatelessWidget {
       },
       openPage: openPage ?? Container(),
     );
-    if (glow == false) return fab;
+    // Always wrapped, so a skin's shadow never remounts the button
     return DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: BorderRadiusDirectional.circular(borderRadius),
-        boxShadow: bohoNightGlow(BohoNightPalette.ember),
+        boxShadow: skinShadow,
       ),
       child: fab,
     );

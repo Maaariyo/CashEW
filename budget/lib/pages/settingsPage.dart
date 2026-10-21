@@ -60,6 +60,8 @@ import 'package:budget/struct/settings.dart';
 import 'package:budget/widgets/framework/popupFramework.dart';
 import 'package:app_settings/app_settings.dart';
 import 'package:budget/widgets/outlinedButtonStacked.dart';
+import 'package:budget/skins/registry.dart';
+import 'package:budget/skins/skin.dart';
 
 //To get SHA1 Key run
 // ./gradlew signingReport
@@ -515,17 +517,19 @@ class SettingsPageContent extends StatelessWidget {
             );
           },
         ),
-        SettingsContainerSwitch(
-          title: "Boho Glass",
-          description:
-              "Light: earthy bohemian colours and line art with frosted glass. Dark: soft-shadow night style with an ember accent",
-          onSwitched: (value) {
-            updateSettings("bohoGlass", value, updateGlobalState: true);
-          },
-          initialValue: appStateSettings["bohoGlass"] != false,
+        SettingsContainerDropdown(
+          title: "Skin",
+          description: activeSkin().description,
           icon: appStateSettings["outlinedIcons"]
               ? Icons.spa_outlined
               : Icons.spa_rounded,
+          initial: activeSkin().id,
+          items: [for (AppSkin skin in registeredSkins) skin.id],
+          getLabel: (String id) =>
+              registeredSkins.firstWhere((skin) => skin.id == id).name,
+          onChanged: (String id) {
+            updateSettings("skin", id, updateGlobalState: true);
+          },
         ),
         getPlatform() == PlatformOS.isIOS
             ? SizedBox.shrink()

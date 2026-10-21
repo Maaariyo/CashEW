@@ -3,7 +3,7 @@ import 'package:budget/widgets/animatedExpanded.dart';
 import 'package:budget/widgets/textWidgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sticky_header/src/widgets/sliver_sticky_header.dart';
-import 'package:budget/struct/bohoGlass.dart';
+import 'package:budget/skins/skin.dart';
 
 class SliverStickyLabelDivider extends StatelessWidget {
   SliverStickyLabelDivider({
@@ -66,10 +66,12 @@ class StickyLabelDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (color == null && bohoGlassEnabled())
-      return BohoGlass(
-        border: false,
-        blur: 14,
+    if (color == null &&
+        activeSkin().barStyle(
+                Theme.of(context).brightness, SkinBar.stickyHeader) !=
+            null)
+      return SkinBarSurface(
+        bar: SkinBar.stickyHeader,
         child: buildLabel(context, Colors.transparent),
       );
     return buildLabel(context,

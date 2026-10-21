@@ -15,7 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:budget/colors.dart';
 import 'package:budget/widgets/pullDownToRefreshSync.dart';
 import 'package:flutter/services.dart';
-import 'package:budget/struct/bohoGlass.dart';
+import 'package:budget/skins/skin.dart';
 
 ValueNotifier<bool> isSwipingToDismissPageDown = ValueNotifier<bool>(false);
 ValueNotifier<bool> callRefreshToPages = ValueNotifier<bool>(false);
@@ -483,7 +483,9 @@ class PageFrameworkState extends State<PageFramework>
     Widget scaffold = Scaffold(
       resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
       backgroundColor:
-          bohoGlassEnabled() ? Colors.transparent : widget.backgroundColor,
+          skinPaintsBackdrop(Theme.of(context).brightness)
+              ? Colors.transparent
+              : widget.backgroundColor,
       body: widget.bodyBuilder != null
           ? widget.bodyBuilder!(
               _scrollController,
@@ -524,8 +526,9 @@ class PageFrameworkState extends State<PageFramework>
               ],
             ),
     );
-    // Each page paints its own backdrop so pages don't show through each other
-    scaffold = BohoBackground(child: scaffold);
+    // Each page paints the skin's backdrop so pages don't show through each
+    // other. Same structure with or without a skin
+    scaffold = SkinBackdrop(child: scaffold);
 
     Widget? dragDownToDismissScaffold = null;
     if (widget.dragDownToDismiss) {
@@ -536,9 +539,9 @@ class PageFrameworkState extends State<PageFramework>
         behavior: HitTestBehavior.opaque,
         child: Stack(
           children: [
-            if (widget.transparentAppBar != true && bohoGlassEnabled())
-              BohoBackground()
-            else if (widget.transparentAppBar != true)
+            if (widget.transparentAppBar != true)
+              Positioned.fill(child: SkinBackdrop()),
+            if (widget.transparentAppBar != true)
               ...getAppBarBackgroundColorLayers(
                 animationControllerOpacity: _animationControllerOpacity,
                 percent: null,
@@ -1024,27 +1027,26 @@ class PageFrameworkSliverAppBar extends StatelessWidget {
             ],
           ),
         );
-        // FlexibleSpaceBar fades its background out as it collapses, so the
-        // Boho Glass bar sits behind it instead
-        if (bohoGlassEnabled() && appBarBackgroundColor == null)
-          return Stack(
-            children: [
-              Positioned.fill(
-                child: bohoAppBarGlass(
-                  context: context,
-                  animationControllerOpacity:
-                      centeredTitleSmallWithDefault == false &&
-                              centeredTitleWithDefault == false
-                          ? null
-                          : animationControllerOpacity,
-                  percent: percent,
-                  forceBackgroundColors: forceBackgroundColors,
-                ),
+        // FlexibleSpaceBar fades its background out as it collapses, so a
+        // skin's bar sits behind it instead
+        return Stack(
+          children: [
+            Positioned.fill(
+              child: skinAppBarLayer(
+                context: context,
+                appBarBackgroundColor: appBarBackgroundColor,
+                animationControllerOpacity:
+                    centeredTitleSmallWithDefault == false &&
+                            centeredTitleWithDefault == false
+                        ? null
+                        : animationControllerOpacity,
+                percent: percent,
+                forceBackgroundColors: forceBackgroundColors,
               ),
-              flexibleSpaceBar,
-            ],
-          );
-        return flexibleSpaceBar;
+            ),
+            flexibleSpaceBar,
+          ],
+        );
       }),
       // shape: RoundedRectangleBorder(
       //   borderRadius: BorderRadiusDirectional.vertical(
@@ -1074,8 +1076,8 @@ Color calculateAppBarBGColor({
   required Color? appBarBackgroundColor,
   required bool centeredTitleSmall,
 }) {
-  // The glass layer in getAppBarBackgroundColorLayers paints the bar instead
-  if (bohoGlassEnabled() && appBarBackgroundColor == null)
+  // skinAppBarLayer paints the bar instead
+  if (skinAppBarStyle(context, appBarBackgroundColor) != null)
     return Colors.transparent;
   Color appBarBGColorCalculated = appBarBackgroundColor == null
       ? Theme.of(context).colorScheme.secondaryContainer
@@ -1087,24 +1089,24 @@ Color calculateAppBarBGColor({
   return appBarBGColorCalculated;
 }
 
-// Expanded: the backdrop shows through. Collapsed: frosted glass bar.
-Widget bohoAppBarGlass({
+SkinBarStyle? skinAppBarStyle(
+        BuildContext context, Color? appBarBackgroundColor) =>
+    appBarBackgroundColor != null
+        ? null
+        : activeSkin().barStyle(Theme.of(context).brightness, SkinBar.appBar);
+
+// The skin's app bar: none while expanded, fading in as it collapses
+Widget skinAppBarLayer({
   required BuildContext context,
+  required Color? appBarBackgroundColor,
   required AnimationController? animationControllerOpacity,
   required double? percent,
   required bool forceBackgroundColors,
 }) {
-  Widget glass = BohoGlass(
-    border: false,
-    child: Align(
-      alignment: AlignmentDirectional.bottomCenter,
-      child: Container(
-        height: 0.8,
-        color: bohoGlassBorder(Theme.of(context).brightness),
-      ),
-    ),
-  );
-  if (forceBackgroundColors) return glass;
+  SkinBarStyle? style = skinAppBarStyle(context, appBarBackgroundColor);
+  if (style == null) return SizedBox.shrink();
+  Widget bar = buildSkinBarSurface(style, SizedBox.expand());
+  if (forceBackgroundColors) return bar;
   if (animationControllerOpacity != null)
     return AnimatedBuilder(
       animation: animationControllerOpacity,
@@ -1113,10 +1115,10 @@ Widget bohoAppBarGlass({
             (animationControllerOpacity.value - 0.5) / 0.5, 0, 1),
         child: child,
       ),
-      child: glass,
+      child: bar,
     );
   if (percent != null)
-    return Opacity(opacity: clampDouble(percent, 0, 1), child: glass);
+    return Opacity(opacity: clampDouble(percent, 0, 1), child: bar);
   return SizedBox.shrink();
 }
 
@@ -1133,8 +1135,8 @@ List<Widget> getAppBarBackgroundColorLayers({
 }) {
   // animationControllerOpacity does from top:1 to bottom: 0
   // and to make it into a percent: we use (animationControllerOpacity.value - 0.5) / 0.5
-  // Boho Glass paints the bar with bohoAppBarGlass instead
-  if (bohoGlassEnabled() && appBarBackgroundColor == null) return [];
+  // A skin paints the bar with skinAppBarLayer instead
+  if (skinAppBarStyle(context, appBarBackgroundColor) != null) return [];
   Color appBarBGColorCalculated = calculateAppBarBGColor(
     context: context,
     appBarBackgroundColor: appBarBackgroundColor,

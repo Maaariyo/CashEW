@@ -34,7 +34,7 @@ import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'firebase_options.dart';
-import 'package:budget/struct/bohoGlass.dart';
+import 'package:budget/skins/skin.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 // Requires hot restart when changed
@@ -168,7 +168,9 @@ class App extends StatelessWidget {
           ),
         );
 
-        mainWidget = BohoBackground(child: mainWidget);
+        // Same structure with or without a skin, so switching skins never
+        // remounts the providers below
+        mainWidget = SkinBackdrop(child: mainWidget);
 
         if (kIsWeb) {
           return FadeIn(

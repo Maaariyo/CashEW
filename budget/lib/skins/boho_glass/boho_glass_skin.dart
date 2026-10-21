@@ -1,15 +1,147 @@
-// CashEW "Boho Glass" visual style. Light mode: an earthy bohemian palette and
-// line-art backdrop, with frosted glass surfaces layered on top. Dark mode
+// Boho Glass skin. Light mode: an earthy bohemian palette and line-art
+// backdrop, with frosted glass surfaces layered on top. Dark mode
 // ("Boho Night"): soft-UI neumorphism, one charcoal surface that cards are
 // raised out of with paired highlight/shadow, and a glowing ember accent.
-// Toggle with the "bohoGlass" setting (on by default).
 import 'dart:math' as math;
 import 'dart:ui';
 
+import 'package:budget/colors.dart';
+import 'package:budget/skins/skin.dart';
 import 'package:budget/struct/settings.dart';
 import 'package:flutter/material.dart';
 
-bool bohoGlassEnabled() => appStateSettings["bohoGlass"] != false;
+class BohoGlassSkin extends AppSkin {
+  const BohoGlassSkin();
+
+  @override
+  String get id => "bohoGlass";
+  @override
+  String get name => "Boho Glass";
+  @override
+  String get description =>
+      "Light: earthy bohemian colours and line art with frosted glass. Dark: soft-shadow night style with an ember accent";
+
+  bool light(Brightness brightness) => brightness == Brightness.light;
+
+  @override
+  ColorScheme colorScheme(Brightness brightness) => bohoColorScheme(brightness);
+
+  @override
+  AppColors appColors(Brightness brightness) =>
+      getBohoAppColors(brightness: brightness);
+
+  @override
+  Color backgroundColor(Brightness brightness) =>
+      bohoBackgroundColor(brightness);
+
+  @override
+  Color splashColor(Brightness brightness) => light(brightness)
+      ? BohoPalette.terracotta.withOpacity(0.14)
+      : BohoNightPalette.ember.withOpacity(0.14);
+
+  @override
+  CustomPainter backdropPainter(Brightness brightness) => _BohoBackdropPainter(
+        dark: light(brightness) == false,
+        decorated: bohoGlassLite() == false,
+      );
+
+  @override
+  Color rowFill(Brightness brightness) => Colors.transparent;
+
+  @override
+  Color transactionRowFill(Brightness brightness) => bohoRowFill(brightness);
+
+  @override
+  Color tileFill(Brightness brightness) => bohoGlassFill(brightness);
+
+  @override
+  SkinBarStyle barStyle(Brightness brightness, SkinBar bar) {
+    bool night = light(brightness) == false;
+    bool lite = bohoGlassLite();
+    Color fill = night
+        ? BohoNightPalette.surface
+        : lite
+            ? BohoPalette.cream.withOpacity(0.94)
+            : bohoGlassBarFill(brightness);
+    double blur = night || lite
+        ? 0
+        : bar == SkinBar.navigationBar
+            ? 22
+            : bar == SkinBar.stickyHeader
+                ? 14
+                : 18;
+    BorderSide line =
+        BorderSide(color: bohoGlassBorder(brightness), width: 0.8);
+    switch (bar) {
+      case SkinBar.appBar:
+        return SkinBarStyle(
+            fill: fill, blur: blur, border: Border(bottom: line));
+      case SkinBar.navigationBar:
+        return SkinBarStyle(
+          fill: fill,
+          blur: blur,
+          border: night ? null : Border(top: line),
+          shadow: night
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.45),
+                    offset: Offset(0, -6),
+                    blurRadius: 18,
+                  ),
+                ]
+              : null,
+        );
+      case SkinBar.stickyHeader:
+        return SkinBarStyle(fill: fill, blur: blur);
+    }
+  }
+
+  @override
+  List<BoxShadow>? cardShadow(Brightness brightness, {required bool sharp}) =>
+      light(brightness) ? null : bohoNightShadow(depth: sharp ? 0.45 : 1);
+
+  @override
+  List<BoxShadow>? fabShadow(Brightness brightness) =>
+      light(brightness) ? null : bohoNightGlow(BohoNightPalette.ember);
+
+  @override
+  double? budgetHeaderOpacity(Brightness brightness) =>
+      light(brightness) ? null : 0.3;
+
+  @override
+  Color addButtonColor(Brightness brightness) => light(brightness)
+      ? BohoPalette.umber.withOpacity(0.35)
+      : BohoNightPalette.textMuted.withOpacity(0.75);
+
+  @override
+  Color chipSelectedColor(ColorScheme colorScheme) => colorScheme.primary;
+
+  @override
+  Color chipSelectedTextColor(ColorScheme colorScheme) => colorScheme.onPrimary;
+
+  @override
+  Color navigationIndicatorColor(Brightness brightness) => light(brightness)
+      ? BohoPalette.terracotta.withOpacity(0.18)
+      : BohoNightPalette.raisedHigh;
+
+  @override
+  Color? navigationIconColor(Brightness brightness, {required bool selected}) {
+    if (light(brightness)) return null;
+    return selected ? BohoNightPalette.emberLight : BohoNightPalette.textMuted;
+  }
+
+  @override
+  TextStyle? textStyle(TextStyle style,
+      {required double fontSize,
+      required FontWeight fontWeight,
+      required Brightness brightness}) {
+    if (light(brightness) &&
+        fontSize >= 19 &&
+        fontWeight.index >= FontWeight.w600.index)
+      return bohoHeadingStyle(style);
+    return null;
+  }
+}
 
 // Battery saver keeps the palette but skips blur and the decorated backdrop
 bool bohoGlassLite() => appStateSettings["batterySaver"] == true;
@@ -44,9 +176,6 @@ class BohoNightPalette {
   static const Color sage = Color(0xFF8FCB9B);
 }
 
-bool bohoNight(Brightness brightness) =>
-    bohoGlassEnabled() && brightness == Brightness.dark;
-
 // Raised neumorphic shadow pair: highlight from the top left, shade to the
 // bottom right
 List<BoxShadow> bohoNightShadow({double depth = 1}) => [
@@ -72,7 +201,9 @@ List<BoxShadow> bohoNightGlow(Color color) => [
     ];
 
 Color bohoBackgroundColor(Brightness brightness) =>
-    brightness == Brightness.light ? BohoPalette.cream : BohoNightPalette.surface;
+    brightness == Brightness.light
+        ? BohoPalette.cream
+        : BohoNightPalette.surface;
 
 // Fill for cards: translucent glass in light mode, a raised surface at night
 Color bohoGlassFill(Brightness brightness) => brightness == Brightness.light
@@ -149,73 +280,57 @@ ColorScheme bohoColorScheme(Brightness brightness) {
   );
 }
 
-// Paints the backdrop behind [child]. With no child it fills its parent.
-class BohoBackground extends StatelessWidget {
-  const BohoBackground({this.child, super.key});
-  final Widget? child;
-
-  @override
-  Widget build(BuildContext context) {
-    if (bohoGlassEnabled() == false) return child ?? SizedBox.shrink();
-    Widget backdrop = RepaintBoundary(
-      child: CustomPaint(
-        painter: _BohoBackdropPainter(
-          dark: Theme.of(context).brightness == Brightness.dark,
-          decorated: bohoGlassLite() == false,
-        ),
-        child: SizedBox.expand(),
-      ),
-    );
-    if (child == null) return backdrop;
-    return Stack(
-      fit: StackFit.passthrough,
-      children: [Positioned.fill(child: backdrop), child!],
-    );
-  }
-}
-
-// Frosted glass: blurs whatever is behind it and tints it
-class BohoGlass extends StatelessWidget {
-  const BohoGlass({
-    required this.child,
-    this.borderRadius = BorderRadius.zero,
-    this.blur = 18,
-    this.fill,
-    this.border = true,
-    super.key,
-  });
-  final Widget child;
-  final BorderRadius borderRadius;
-  final double blur;
-  final Color? fill;
-  final bool border;
-
-  @override
-  Widget build(BuildContext context) {
-    Brightness brightness = Theme.of(context).brightness;
-    bool night = brightness == Brightness.dark;
-    Widget surface = DecoratedBox(
-      decoration: BoxDecoration(
-        color: fill ??
-            (bohoGlassLite() && night == false
-                ? bohoBackgroundColor(brightness).withOpacity(0.94)
-                : bohoGlassBarFill(brightness)),
-        borderRadius: borderRadius,
-        border: border
-            ? Border.all(color: bohoGlassBorder(brightness), width: 0.8)
-            : null,
-      ),
-      child: child,
-    );
-    if (bohoGlassLite() || night) return surface;
-    return ClipRRect(
-      borderRadius: borderRadius,
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-        child: surface,
-      ),
-    );
-  }
+AppColors getBohoAppColors({required Brightness brightness}) {
+  // Light: translucent cards the backdrop frosts through. Dark: raised
+  // neumorphic surfaces
+  Color glass = bohoGlassFill(brightness);
+  return brightness == Brightness.light
+      ? AppColors(
+          colors: {
+            "white": Colors.white,
+            "black": BohoPalette.umber,
+            "textLight": appStateSettings["increaseTextContrast"]
+                ? BohoPalette.umber.withOpacity(0.75)
+                : BohoPalette.umber.withOpacity(0.55),
+            "lightDarkAccent": BohoPalette.sand,
+            "lightDarkAccentHeavyLight": glass,
+            "canvasContainer": Color(0xFFE8D6C1),
+            "lightDarkAccentHeavy": Color(0xFFE3CFB8),
+            "shadowColor": BohoPalette.rust.withOpacity(0.28),
+            "shadowColorLight": BohoPalette.rust.withOpacity(0.12),
+            "unPaidUpcoming": BohoPalette.teal,
+            "unPaidOverdue": BohoPalette.plum,
+            "incomeAmount": Color(0xFF5E7F3A),
+            "expenseAmount": Color(0xFFB4532F),
+            "warningOrange": Color(0xFFC08A26),
+            "starYellow": BohoPalette.mustard,
+            "dividerColor": BohoPalette.umber.withOpacity(0.08),
+            "standardContainerColor": glass,
+          },
+        )
+      : AppColors(
+          colors: {
+            "white": Colors.black,
+            "black": BohoNightPalette.text,
+            "textLight": appStateSettings["increaseTextContrast"]
+                ? Color(0xFFB9BCC2)
+                : BohoNightPalette.textMuted,
+            "lightDarkAccent": BohoNightPalette.inset,
+            "lightDarkAccentHeavyLight": glass,
+            "canvasContainer": BohoNightPalette.inset,
+            "lightDarkAccentHeavy": Color(0xFF3B3E43),
+            "shadowColor": Colors.black.withOpacity(0.6),
+            "shadowColorLight": Colors.black.withOpacity(0.55),
+            "unPaidUpcoming": Color(0xFF7FB2C9),
+            "unPaidOverdue": Color(0xFFA99BF0),
+            "incomeAmount": BohoNightPalette.sage,
+            "expenseAmount": BohoNightPalette.emberLight,
+            "warningOrange": Color(0xFFF2A65A),
+            "starYellow": Color(0xFFF5C04A),
+            "dividerColor": Colors.white.withOpacity(0.05),
+            "standardContainerColor": glass,
+          },
+        );
 }
 
 // Large bold text is set in Fraunces with its soft, hand-made axes
@@ -232,13 +347,6 @@ TextStyle bohoHeadingStyle(TextStyle style) {
     letterSpacing: (style.letterSpacing ?? 0) - 0.2,
   );
 }
-
-bool useBohoHeading(
-        double fontSize, FontWeight fontWeight, Brightness brightness) =>
-    bohoGlassEnabled() &&
-    brightness == Brightness.light &&
-    fontSize >= 19 &&
-    fontWeight.index >= FontWeight.w600.index;
 
 class _BohoBackdropPainter extends CustomPainter {
   _BohoBackdropPainter({required this.dark, required this.decorated});
@@ -290,14 +398,12 @@ class _BohoBackdropPainter extends CustomPainter {
 
     blob(Offset(w * 0.92, h * 0.05), blobScale * 0.85, BohoPalette.terracotta,
         0.5);
-    blob(Offset(w * 0.02, h * 0.24), blobScale * 0.7, BohoPalette.mustard,
-        0.42);
-    blob(Offset(w * 0.95, h * 0.55), blobScale * 0.75, BohoPalette.sage,
-        0.42);
+    blob(
+        Offset(w * 0.02, h * 0.24), blobScale * 0.7, BohoPalette.mustard, 0.42);
+    blob(Offset(w * 0.95, h * 0.55), blobScale * 0.75, BohoPalette.sage, 0.42);
     blob(Offset(w * 0.08, h * 0.82), blobScale * 0.8, BohoPalette.dustyRose,
         0.45);
-    blob(Offset(w * 0.7, h * 1.02), blobScale * 0.7, BohoPalette.teal,
-        0.22);
+    blob(Offset(w * 0.7, h * 1.02), blobScale * 0.7, BohoPalette.teal, 0.22);
 
     Color ink = BohoPalette.umber.withOpacity(0.11);
     Paint line = Paint()

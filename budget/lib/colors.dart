@@ -1,5 +1,5 @@
 import 'package:budget/functions.dart';
-import 'package:budget/struct/bohoGlass.dart';
+import 'package:budget/skins/skin.dart';
 import 'package:budget/struct/settings.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +19,8 @@ AppColors getAppColors(
     {required Brightness brightness,
     required ThemeData themeData,
     required Color accentColor}) {
-  if (bohoGlassEnabled()) return getBohoAppColors(brightness: brightness);
+  AppColors? skinColors = activeSkin().appColors(brightness);
+  if (skinColors != null) return skinColors;
   Color lightDarkAccentHeavyLight = brightness == Brightness.light
       ? appStateSettings["accentSystemColor"] == true &&
               appStateSettings["materialYou"] &&
@@ -118,59 +119,6 @@ AppColors getAppColors(
                         amount: 0.6,
                       )
                     : lightDarkAccentHeavyLight,
-          },
-        );
-}
-
-AppColors getBohoAppColors({required Brightness brightness}) {
-  // Light: translucent cards the backdrop frosts through. Dark: raised
-  // neumorphic surfaces
-  Color glass = bohoGlassFill(brightness);
-  return brightness == Brightness.light
-      ? AppColors(
-          colors: {
-            "white": Colors.white,
-            "black": BohoPalette.umber,
-            "textLight": appStateSettings["increaseTextContrast"]
-                ? BohoPalette.umber.withOpacity(0.75)
-                : BohoPalette.umber.withOpacity(0.55),
-            "lightDarkAccent": BohoPalette.sand,
-            "lightDarkAccentHeavyLight": glass,
-            "canvasContainer": Color(0xFFE8D6C1),
-            "lightDarkAccentHeavy": Color(0xFFE3CFB8),
-            "shadowColor": BohoPalette.rust.withOpacity(0.28),
-            "shadowColorLight": BohoPalette.rust.withOpacity(0.12),
-            "unPaidUpcoming": BohoPalette.teal,
-            "unPaidOverdue": BohoPalette.plum,
-            "incomeAmount": Color(0xFF5E7F3A),
-            "expenseAmount": Color(0xFFB4532F),
-            "warningOrange": Color(0xFFC08A26),
-            "starYellow": BohoPalette.mustard,
-            "dividerColor": BohoPalette.umber.withOpacity(0.08),
-            "standardContainerColor": glass,
-          },
-        )
-      : AppColors(
-          colors: {
-            "white": Colors.black,
-            "black": BohoNightPalette.text,
-            "textLight": appStateSettings["increaseTextContrast"]
-                ? Color(0xFFB9BCC2)
-                : BohoNightPalette.textMuted,
-            "lightDarkAccent": BohoNightPalette.inset,
-            "lightDarkAccentHeavyLight": glass,
-            "canvasContainer": BohoNightPalette.inset,
-            "lightDarkAccentHeavy": Color(0xFF3B3E43),
-            "shadowColor": Colors.black.withOpacity(0.6),
-            "shadowColorLight": Colors.black.withOpacity(0.55),
-            "unPaidUpcoming": Color(0xFF7FB2C9),
-            "unPaidOverdue": Color(0xFFA99BF0),
-            "incomeAmount": BohoNightPalette.sage,
-            "expenseAmount": BohoNightPalette.emberLight,
-            "warningOrange": Color(0xFFF2A65A),
-            "starYellow": Color(0xFFF5C04A),
-            "dividerColor": Colors.white.withOpacity(0.05),
-            "standardContainerColor": glass,
           },
         );
 }
@@ -438,7 +386,8 @@ bool isGrayScale(Color color, {int threshold = 10}) {
 }
 
 ColorScheme getColorScheme(Brightness brightness) {
-  if (bohoGlassEnabled()) return bohoColorScheme(brightness);
+  ColorScheme? skinScheme = activeSkin().colorScheme(brightness);
+  if (skinScheme != null) return skinScheme;
   if (isGrayScale(
     getSettingConstants(appStateSettings)["accentColor"],
     threshold: 15,
@@ -582,7 +531,8 @@ Color getBottomNavbarBackgroundColor({
   required Brightness brightness,
   required Color lightDarkAccent,
 }) {
-  if (bohoGlassEnabled()) return bohoBackgroundColor(brightness);
+  Color? skinBackground = activeSkin().backgroundColor(brightness);
+  if (skinBackground != null) return skinBackground;
   if (getPlatform() == PlatformOS.isIOS) {
     return brightness == Brightness.light
         ? lightenPastel(colorScheme.secondaryContainer,
@@ -625,9 +575,9 @@ class CustomColorTheme extends StatelessWidget {
     ColorScheme colorScheme = ColorScheme.fromSeed(
       seedColor: accentColor!,
       brightness: determineBrightnessTheme(context),
-      background: bohoGlassEnabled()
-          ? bohoBackgroundColor(determineBrightnessTheme(context))
-          : determineBrightnessTheme(context) == Brightness.dark
+      background: activeSkin()
+              .backgroundColor(determineBrightnessTheme(context)) ??
+          (determineBrightnessTheme(context) == Brightness.dark
           ? (appStateSettings["forceFullDarkBackground"] == true
               ? Colors.black
               : appStateSettings["materialYou"]
@@ -635,7 +585,7 @@ class CustomColorTheme extends StatelessWidget {
                   : Colors.black)
           : appStateSettings["materialYou"]
               ? lightenPastel(accentColor!, amount: 0.91)
-              : Colors.white,
+              : Colors.white),
     );
     return Theme(
       data: generateThemeDataWithExtension(
@@ -681,22 +631,22 @@ ThemeData getLightTheme() {
     fontFamily: appStateSettings["font"],
     fontFamilyFallback: ['Inter'],
     colorScheme: getColorScheme(brightness),
-    scaffoldBackgroundColor: bohoGlassEnabled() ? Colors.transparent : null,
+    scaffoldBackgroundColor:
+        skinPaintsBackdrop(brightness) ? Colors.transparent : null,
     useMaterial3: true,
     applyElevationOverlayColor: false,
     typography: Typography.material2014(),
     splashColor: getPlatform() == PlatformOS.isIOS
         ? Colors.transparent
-        : bohoGlassEnabled()
-            ? BohoPalette.terracotta.withOpacity(0.14)
-            : appStateSettings["materialYou"]
+        : activeSkin().splashColor(brightness) ??
+            (appStateSettings["materialYou"]
                 ? darkenPastel(
                         lightenPastel(
                             getSettingConstants(appStateSettings)["accentColor"],
                             amount: 0.8),
                         amount: 0.2)
                     .withOpacity(0.5)
-                : null,
+                : null),
   );
   return generateThemeDataWithExtension(
     themeData: themeData,
@@ -718,21 +668,21 @@ ThemeData getDarkTheme() {
     fontFamily: appStateSettings["font"],
     fontFamilyFallback: ['Inter'],
     colorScheme: getColorScheme(brightness),
-    scaffoldBackgroundColor: bohoGlassEnabled() ? Colors.transparent : null,
+    scaffoldBackgroundColor:
+        skinPaintsBackdrop(brightness) ? Colors.transparent : null,
     useMaterial3: true,
     typography: Typography.material2014(),
     splashColor: getPlatform() == PlatformOS.isIOS
         ? Colors.transparent
-        : bohoGlassEnabled()
-            ? BohoNightPalette.ember.withOpacity(0.14)
-            : appStateSettings["materialYou"]
+        : activeSkin().splashColor(brightness) ??
+            (appStateSettings["materialYou"]
                 ? darkenPastel(
                         lightenPastel(
                             getSettingConstants(appStateSettings)["accentColor"],
                             amount: 0.86),
                         amount: 0.1)
                     .withOpacity(0.2)
-                : null,
+                : null),
   );
   return generateThemeDataWithExtension(
     themeData: themeData,

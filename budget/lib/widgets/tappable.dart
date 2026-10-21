@@ -1,15 +1,15 @@
 import 'dart:ui';
 
 import 'package:budget/functions.dart';
-import 'package:budget/struct/bohoGlass.dart';
+import 'package:budget/skins/skin.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 
-Color defaultTappableColor(BuildContext context) => bohoGlassEnabled()
-    ? Colors.transparent
-    : Theme.of(context).colorScheme.background;
+Color defaultTappableColor(BuildContext context) =>
+    activeSkin().rowFill(Theme.of(context).brightness) ??
+    Theme.of(context).colorScheme.background;
 
 class Tappable extends StatelessWidget {
   Tappable({

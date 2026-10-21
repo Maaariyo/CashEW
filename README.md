@@ -36,29 +36,32 @@ Material You theming, app links) is unchanged upstream code.
 The different application id means CashEW installs alongside Cashew. To move your data, use
 *Export Cashew Data File* (Settings → Import & Export) in Cashew, then *Import Cashew Data File* in CashEW.
 
-## Boho Glass design
+## Skins and the Boho Glass design
 
-CashEW ships with its own look, on by default, in two halves that follow the system or in-app
-light/dark setting:
+The look of CashEW comes from a **skin**, picked in *Settings → Skin*. Skins are separate modules
+on top of the app, not part of its core: switching skins only changes colours and surfaces, never
+your data or the app's state. Two skins ship today:
 
-- **Light: Boho Glass.** An earthy bohemian palette (terracotta, mustard, sage, dusty rose, cream),
-  hand-drawn line art (rainbow arches, sun, leaves, mandala dots) painted behind every page,
-  frosted-glass cards, app bars, date headers and navigation bar, and headings set in
-  [Fraunces](https://github.com/undercasetype/Fraunces) (SIL Open Font License) with its soft axis
-  turned up.
-- **Dark: Boho Night.** Soft-UI neumorphism: one flat charcoal surface, cards raised out of it with a
-  paired highlight and shadow, list rows flat on the surface, and a glowing ember accent (FAB,
-  selected tab, amounts). Budget colours are kept but toned down to a tint, and headings use the
-  regular app font.
+- **Cashew**: the original Cashew design, exactly as upstream.
+- **Boho Glass** (default), in two halves that follow the system or in-app light/dark setting:
+
+  - **Light: Boho Glass.** An earthy bohemian palette (terracotta, mustard, sage, dusty rose, cream),
+    hand-drawn line art (rainbow arches, sun, leaves, mandala dots) painted behind every page,
+    frosted-glass cards, app bars, date headers and navigation bar, and headings set in
+    [Fraunces](https://github.com/undercasetype/Fraunces) (SIL Open Font License) with its soft
+    axis turned up.
+  - **Dark: Boho Night.** Soft-UI neumorphism: one flat charcoal surface, cards raised out of it
+    with a paired highlight and shadow, list rows flat on the surface, and a glowing ember accent
+    (FAB, selected tab, amounts). Budget colours are kept but toned down to a tint, and headings
+    use the regular app font.
 
 | Light | Light | Dark | Dark |
 |---|---|---|---|
 | ![](docs/screenshots/home-light.jpg) | ![](docs/screenshots/transactions-light.jpg) | ![](docs/screenshots/night-home.jpg) | ![](docs/screenshots/night-transactions.jpg) |
 
-- Turn it off in *Settings → Boho Glass* to get the original Cashew design back in both modes.
-- With *Battery Saver* on, the palette stays but blur and the decorated backdrop are skipped.
-- All of it lives in `budget/lib/struct/bohoGlass.dart`, with small hooks in the theme, shadow
-  helpers, page framework, navigation bar, FAB, budget card and text widgets.
+- With *Battery Saver* on, Boho Glass keeps its palette but skips blur and the decorated backdrop.
+- Skins live in `budget/lib/skins/`. To add one, implement the `AppSkin` interface and register
+  it; see [`docs/SKINS.md`](docs/SKINS.md).
 
 ## Trek & Travel
 

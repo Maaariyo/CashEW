@@ -26,7 +26,7 @@ import 'package:budget/colors.dart';
 import 'package:budget/functions.dart';
 import 'package:async/async.dart' show StreamZip;
 import 'package:budget/struct/randomConstants.dart';
-import 'package:budget/struct/bohoGlass.dart';
+import 'package:budget/skins/skin.dart';
 
 class BudgetContainer extends StatelessWidget {
   BudgetContainer({
@@ -90,14 +90,12 @@ class BudgetContainer extends StatelessWidget {
                       Positioned.fill(
                         child: AnimatedGooBackground(
                           randomOffset: budget.name.length,
-                          // Boho Night keeps colour to an accent glow
                           color: HexColor(budget.colour,
                                   defaultColor:
                                       Theme.of(context).colorScheme.primary)
-                              .withOpacity(
-                                  bohoNight(Theme.of(context).brightness)
-                                      ? 0.3
-                                      : 0.8),
+                              .withOpacity(activeSkin().budgetHeaderOpacity(
+                                      Theme.of(context).brightness) ??
+                                  0.8),
                         ),
                       ),
                       Padding(

@@ -25,7 +25,13 @@ class WatchAllWallets extends StatelessWidget {
   }
 }
 
-final selectedWalletPkController = StreamController<SelectedWalletPk>();
+// Broadcast, so the provider below can subscribe again whenever it is
+// remounted (for example after RestartApp). A single-subscription controller
+// throws on the second listen, after which no widget can read the selected
+// wallet and wallets disappear until the app is restarted. New subscribers
+// start from initialData, which reads the current selection from settings.
+final selectedWalletPkController =
+    StreamController<SelectedWalletPk>.broadcast();
 
 class WatchSelectedWalletPk extends StatelessWidget {
   const WatchSelectedWalletPk({required this.child, super.key});

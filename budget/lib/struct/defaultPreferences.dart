@@ -153,7 +153,6 @@ Future<Map<String, dynamic>> getDefaultPreferences() async {
     "appOpenedHour": DateTime.now().hour,
     "appOpenedMinute": DateTime.now().minute,
     "materialYou": supportsSystemColor(),
-    "bohoGlass": true,
     "trekTravelTrips": [],
     "trekTravelActiveTrip": null,
     "colorTintCategoryIcon": false,

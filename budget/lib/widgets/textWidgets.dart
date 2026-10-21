@@ -3,7 +3,7 @@ import 'package:budget/struct/settings.dart';
 import 'package:budget/widgets/util/contextMenu.dart';
 import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:budget/struct/bohoGlass.dart';
+import 'package:budget/skins/skin.dart';
 
 // Don't use Inter or the offset
 Set<String> fallbackFontLocales = {
@@ -87,10 +87,15 @@ class TextFont extends StatelessWidget {
             ]
           : [],
     );
-    bool bohoHeading = useBohoHeading(
-            this.fontSize, this.fontWeight, Theme.of(context).brightness) &&
-        fallbackFontLocales.contains(appStateSettings["locale"]) == false;
-    if (bohoHeading) textStyle = bohoHeadingStyle(textStyle);
+    // Skins don't restyle text in locales that need a fallback font
+    TextStyle? skinTextStyle =
+        fallbackFontLocales.contains(appStateSettings["locale"])
+            ? null
+            : activeSkin().textStyle(textStyle,
+                fontSize: this.fontSize,
+                fontWeight: this.fontWeight,
+                brightness: Theme.of(context).brightness);
+    if (skinTextStyle != null) textStyle = skinTextStyle;
     Widget textWidget(textPassed) {
       return AnimatedDefaultTextStyle(
         duration: Duration(milliseconds: 200),
@@ -102,7 +107,8 @@ class TextFont extends StatelessWidget {
                 (fallbackFontLocales.contains(appStateSettings["locale"]) ==
                             true ||
                         appStateSettings["font"] != "Avenir" ||
-                        bohoHeading
+                        skinTextStyle?.fontFamily != null &&
+                            skinTextStyle?.fontFamily != "Avenir"
                     ? 0
                     : 0.1),
           ),

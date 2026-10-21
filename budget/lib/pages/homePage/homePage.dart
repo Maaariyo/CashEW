@@ -40,7 +40,7 @@ import 'package:budget/widgets/util/rightSideClipper.dart';
 import 'package:flutter/services.dart';
 import 'package:budget/widgets/util/checkWidgetLaunch.dart';
 import 'package:flutter/foundation.dart';
-import 'package:budget/struct/bohoGlass.dart';
+import 'package:budget/skins/skin.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({
@@ -291,7 +291,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     // Wipe all remaining pixels off - sometimes graphics artifacts are left behind
                     Container(
                         height: 1,
-                        color: bohoGlassEnabled()
+                        color: skinPaintsBackdrop(Theme.of(context).brightness)
                             ? Colors.transparent
                             : Theme.of(context).colorScheme.background),
 
@@ -405,7 +405,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     // Wipe all remaining pixels off - sometimes graphics artifacts are left behind
                     Container(
                         height: 1,
-                        color: bohoGlassEnabled()
+                        color: skinPaintsBackdrop(Theme.of(context).brightness)
                             ? Colors.transparent
                             : Theme.of(context).colorScheme.background),
                   ],

@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:budget/colors.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:budget/struct/bohoGlass.dart';
+import 'package:budget/skins/skin.dart';
 
 import 'package:budget/pages/addButton.dart';
 import 'util/widgetSize.dart';
@@ -107,8 +107,9 @@ class _SelectChipsState<T> extends State<SelectChips<T>> {
     super.initState();
   }
 
-  bool bohoSelectedFill(T item) =>
-      bohoGlassEnabled() &&
+  // Whether the skin's selected colour is used for this item
+  bool skinSelectedFill(T item) =>
+      activeSkin().chipSelectedColor(Theme.of(context).colorScheme) != null &&
       widget.selectedColor == null &&
       (widget.getCustomSelectedColor == null ||
           widget.getCustomSelectedColor!(item) == null);
@@ -176,9 +177,9 @@ class _SelectChipsState<T> extends State<SelectChips<T>> {
                               widget.getCustomSelectedColor!(item) != null
                           ? widget.getCustomSelectedColor!(item)
                           : widget.selectedColor ??
-                              (bohoGlassEnabled()
-                                  ? Theme.of(context).colorScheme.primary
-                                  : appStateSettings["materialYou"]
+                              activeSkin().chipSelectedColor(
+                                  Theme.of(context).colorScheme) ??
+                              (appStateSettings["materialYou"]
                                   ? null
                                   : (Theme.of(context).brightness ==
                                           Brightness.light
@@ -200,8 +201,9 @@ class _SelectChipsState<T> extends State<SelectChips<T>> {
                       label: TextFont(
                         text: label,
                         fontSize: 15,
-                        textColor: selected && bohoSelectedFill(item)
-                            ? Theme.of(context).colorScheme.onPrimary
+                        textColor: selected && skinSelectedFill(item)
+                            ? activeSkin().chipSelectedTextColor(
+                                Theme.of(context).colorScheme)
                             : null,
                       ),
                       selected: selected,
