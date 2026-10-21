@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:budget/colors.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:budget/struct/bohoGlass.dart';
 
 import 'package:budget/pages/addButton.dart';
 import 'util/widgetSize.dart';
@@ -106,6 +107,12 @@ class _SelectChipsState<T> extends State<SelectChips<T>> {
     super.initState();
   }
 
+  bool bohoSelectedFill(T item) =>
+      bohoGlassEnabled() &&
+      widget.selectedColor == null &&
+      (widget.getCustomSelectedColor == null ||
+          widget.getCustomSelectedColor!(item) == null);
+
   @override
   Widget build(BuildContext context) {
     List<Widget> children = [
@@ -169,7 +176,9 @@ class _SelectChipsState<T> extends State<SelectChips<T>> {
                               widget.getCustomSelectedColor!(item) != null
                           ? widget.getCustomSelectedColor!(item)
                           : widget.selectedColor ??
-                              (appStateSettings["materialYou"]
+                              (bohoGlassEnabled()
+                                  ? Theme.of(context).colorScheme.primary
+                                  : appStateSettings["materialYou"]
                                   ? null
                                   : (Theme.of(context).brightness ==
                                           Brightness.light
@@ -191,6 +200,9 @@ class _SelectChipsState<T> extends State<SelectChips<T>> {
                       label: TextFont(
                         text: label,
                         fontSize: 15,
+                        textColor: selected && bohoSelectedFill(item)
+                            ? Theme.of(context).colorScheme.onPrimary
+                            : null,
                       ),
                       selected: selected,
                       onSelected: (bool selected) {

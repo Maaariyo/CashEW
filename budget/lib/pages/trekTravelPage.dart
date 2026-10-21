@@ -59,7 +59,7 @@ class _TrekTravelPageState extends State<TrekTravelPage> {
               horizontal: 20, vertical: 5),
           child: TextFont(
             text:
-                "A trip keeps its own book of expenses. Everything you add to it also shows up in your accounts, transactions and other budgets. While a trip is active, new transactions are added to it automatically.",
+                "A trip keeps its own book of expenses. Everything you add to it also shows up in your wallets, transactions and other budgets. While a trip is active, new transactions are added to it automatically.",
             fontSize: 14,
             maxLines: 10,
             textColor: getColor(context, "textLight"),

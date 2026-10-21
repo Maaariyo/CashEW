@@ -923,7 +923,7 @@ class PageFrameworkSliverAppBar extends StatelessWidget {
                 (expandedHeightCalculated - collapsedHeight);
         if (collapsedHeight == expandedHeightCalculated) percent = 1;
         String titleString = capitalizeTitle ? title.capitalizeFirst : title;
-        return FlexibleSpaceBar(
+        Widget flexibleSpaceBar = FlexibleSpaceBar(
           centerTitle: centeredTitleWithDefault,
           titlePadding:
               EdgeInsetsDirectional.symmetric(vertical: 15, horizontal: 18),
@@ -1024,6 +1024,27 @@ class PageFrameworkSliverAppBar extends StatelessWidget {
             ],
           ),
         );
+        // FlexibleSpaceBar fades its background out as it collapses, so the
+        // Boho Glass bar sits behind it instead
+        if (bohoGlassEnabled() && appBarBackgroundColor == null)
+          return Stack(
+            children: [
+              Positioned.fill(
+                child: bohoAppBarGlass(
+                  context: context,
+                  animationControllerOpacity:
+                      centeredTitleSmallWithDefault == false &&
+                              centeredTitleWithDefault == false
+                          ? null
+                          : animationControllerOpacity,
+                  percent: percent,
+                  forceBackgroundColors: forceBackgroundColors,
+                ),
+              ),
+              flexibleSpaceBar,
+            ],
+          );
+        return flexibleSpaceBar;
       }),
       // shape: RoundedRectangleBorder(
       //   borderRadius: BorderRadiusDirectional.vertical(
@@ -1066,6 +1087,39 @@ Color calculateAppBarBGColor({
   return appBarBGColorCalculated;
 }
 
+// Expanded: the backdrop shows through. Collapsed: frosted glass bar.
+Widget bohoAppBarGlass({
+  required BuildContext context,
+  required AnimationController? animationControllerOpacity,
+  required double? percent,
+  required bool forceBackgroundColors,
+}) {
+  Widget glass = BohoGlass(
+    border: false,
+    child: Align(
+      alignment: AlignmentDirectional.bottomCenter,
+      child: Container(
+        height: 0.8,
+        color: bohoGlassBorder(Theme.of(context).brightness),
+      ),
+    ),
+  );
+  if (forceBackgroundColors) return glass;
+  if (animationControllerOpacity != null)
+    return AnimatedBuilder(
+      animation: animationControllerOpacity,
+      builder: (_, child) => Opacity(
+        opacity: clampDouble(
+            (animationControllerOpacity.value - 0.5) / 0.5, 0, 1),
+        child: child,
+      ),
+      child: glass,
+    );
+  if (percent != null)
+    return Opacity(opacity: clampDouble(percent, 0, 1), child: glass);
+  return SizedBox.shrink();
+}
+
 List<Widget> getAppBarBackgroundColorLayers({
   required BuildContext context,
   required Color? appBarBackgroundColor,
@@ -1079,41 +1133,8 @@ List<Widget> getAppBarBackgroundColorLayers({
 }) {
   // animationControllerOpacity does from top:1 to bottom: 0
   // and to make it into a percent: we use (animationControllerOpacity.value - 0.5) / 0.5
-  if (bohoGlassEnabled() && appBarBackgroundColor == null) {
-    // Expanded: the backdrop shows through. Collapsed: frosted glass bar.
-    Widget glass = BohoGlass(
-      border: false,
-      child: Align(
-        alignment: AlignmentDirectional.bottomCenter,
-        child: Container(
-          height: 0.8,
-          color: bohoGlassBorder(Theme.of(context).brightness),
-        ),
-      ),
-    );
-    if (forceBackgroundColors) return [Positioned.fill(child: glass)];
-    if (animationControllerOpacity != null)
-      return [
-        Positioned.fill(
-          child: AnimatedBuilder(
-            animation: animationControllerOpacity,
-            builder: (_, child) => Opacity(
-              opacity: clampDouble(
-                  (animationControllerOpacity.value - 0.5) / 0.5, 0, 1),
-              child: child,
-            ),
-            child: glass,
-          ),
-        ),
-      ];
-    if (percent != null)
-      return [
-        Positioned.fill(
-          child: Opacity(opacity: clampDouble(percent, 0, 1), child: glass),
-        ),
-      ];
-    return [];
-  }
+  // Boho Glass paints the bar with bohoAppBarGlass instead
+  if (bohoGlassEnabled() && appBarBackgroundColor == null) return [];
   Color appBarBGColorCalculated = calculateAppBarBGColor(
     context: context,
     appBarBackgroundColor: appBarBackgroundColor,

@@ -22,14 +22,14 @@ If you find the app useful, consider supporting the original developer by buying
 | Multiple budgets | Pro | Free |
 | Multiple goals and long term loans | Pro | Free |
 | Past budget periods / budget history | Pro | Free |
-| All-time spending history graph on accounts | Pro | Free |
+| All-time spending history graph on wallets | Pro | Free |
 | Custom colour picker | Pro | Free |
 | "Upgrade" screen after adding transactions | Yes | No |
 | Google Play Billing / StoreKit | Yes | Removed |
 | Backend | Developer's Firebase project | None by default, bring your own |
 | Android application id | `com.budget.tracker_app` | `io.github.maaariyo.cashewew` |
 
-Everything else (transactions, subscriptions, debts and credits, multiple currencies and accounts,
+Everything else (transactions, subscriptions, debts and credits, multiple currencies and wallets,
 category limits, CSV and Google Sheets import, notifications, home screen widgets, biometric lock,
 Material You theming, app links) is unchanged upstream code.
 
@@ -63,7 +63,7 @@ light/dark setting:
 ## Trek & Travel
 
 *More Actions → Trek & Travel.* A trip has its own book of expenses, but every transaction in it is a
-normal transaction, so it still shows up in your accounts, the transactions list and your other budgets.
+normal transaction, so it still shows up in your wallets, the transactions list and your other budgets.
 
 - **Plan a trip** with a name, dates and a trip budget, or turn an existing "added transactions only"
   budget into a trip.
@@ -78,8 +78,8 @@ normal transaction, so it still shows up in your accounts, the transactions list
 ## Daily Log
 
 *More Actions → Daily Log* (all expenses) or *Daily log* on a trip (only that trip's expenses).
-There is one log per account (fund), and one block per day with logged expenses. Each block has a
-copy button, and *Copy all* / *Export* give every day of the account as text (oldest first, days
+There is one log per wallet, and one block per day with logged expenses. Each block has a
+copy button, and *Copy all* / *Export* give every day of the wallet as text (oldest first, days
 separated by a blank line):
 
 ```
@@ -94,11 +94,11 @@ Balance ..... 8549.50
 ```
 
 - Amounts are plain numbers: no currency sign or thousands separators. Whole amounts have no
-  decimals, others use the account's decimals.
+  decimals, others use the wallet's decimals.
 - An activity's name is the transaction title, or its category if the title is empty.
 - Transfers and balance corrections are not listed as activities. Income isn't either, but both
   count towards the balance.
-- **Balance** is the account's balance at the end of that day, including everything in the account
+- **Balance** is the wallet's balance at the end of that day, including everything in the wallet
   (also outside the trip). Only paid transactions count, as in the rest of the app.
 
 | Trek & Travel | Trip daily log | Daily Log |

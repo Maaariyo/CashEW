@@ -282,9 +282,9 @@ class DebugPage extends StatelessWidget {
             updateSettings("accountColorfulAmountsWithArrows", value,
                 updateGlobalState: true);
           },
-          title: "Colorful Arrow Account Totals",
+          title: "Colorful Arrow Wallet Totals",
           description:
-              "Use an arrow and color to indicate the polarity of account totals on home",
+              "Use an arrow and color to indicate the polarity of wallet totals on home",
           initialValue:
               appStateSettings["accountColorfulAmountsWithArrows"] == true,
           icon: appStateSettings["outlinedIcons"]

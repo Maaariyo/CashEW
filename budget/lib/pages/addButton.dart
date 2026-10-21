@@ -4,6 +4,7 @@ import 'package:budget/widgets/openContainerNavigation.dart';
 import 'package:budget/widgets/tappable.dart';
 import 'package:budget/widgets/textWidgets.dart';
 import 'package:flutter/material.dart';
+import 'package:budget/struct/bohoGlass.dart';
 
 class AddButton extends StatelessWidget {
   const AddButton({
@@ -35,9 +36,13 @@ class AddButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color color = appStateSettings["materialYou"]
-        ? Theme.of(context).colorScheme.secondary.withOpacity(0.3)
-        : getColor(context, "lightDarkAccentHeavy");
+    Color color = bohoGlassEnabled()
+        ? Theme.of(context).brightness == Brightness.dark
+            ? BohoNightPalette.textMuted.withOpacity(0.75)
+            : BohoPalette.umber.withOpacity(0.35)
+        : appStateSettings["materialYou"]
+            ? Theme.of(context).colorScheme.secondary.withOpacity(0.3)
+            : getColor(context, "lightDarkAccentHeavy");
     Widget getButton(onTap) {
       return Tappable(
         color: Colors.transparent,

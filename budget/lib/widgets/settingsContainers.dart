@@ -1,4 +1,5 @@
 import 'package:budget/colors.dart';
+import 'package:budget/struct/bohoGlass.dart';
 import 'package:budget/functions.dart';
 import 'package:budget/struct/settings.dart';
 import 'package:budget/widgets/animatedExpanded.dart';
@@ -206,8 +207,13 @@ class SettingsContainerOpenPage extends StatelessWidget {
       child: OpenContainerNavigation(
         onClosed: onClosed,
         onOpen: onOpen,
-        closedColor:
-            backgroundColor ?? Theme.of(context).colorScheme.background,
+        closedColor: backgroundColor ??
+            (bohoGlassEnabled()
+                // Rows sit on the backdrop; outlined tiles are glass cards
+                ? isOutlined == true
+                    ? bohoGlassFill(Theme.of(context).brightness)
+                    : Colors.transparent
+                : Theme.of(context).colorScheme.background),
         borderRadius: isOutlined == true
             ? 10
             : getIsFullScreen(context)
