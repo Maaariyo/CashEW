@@ -5,7 +5,14 @@ on:
     tags: ["v*"]
     branches: ["**"]
   pull_request:
+  # Actions tab -> Build -> Run workflow. With a tag, the APKs are published
+  # as a GitHub release (the tag is created on the selected commit)
   workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Release tag, e.g. v5.4.3-ew.2 (leave empty to only build)"
+        required: false
+        default: ""
 
 permissions:
   contents: write
@@ -77,8 +84,12 @@ jobs:
 
       # CashEW-<tag or version-commit>-<abi>.apk, plus checksums
       - name: Name APKs
+        env:
+          RELEASE_TAG: ${{ inputs.release_tag }}
         run: |
-          if [ "$GITHUB_REF_TYPE" = "tag" ]; then
+          if [ -n "$RELEASE_TAG" ]; then
+            VERSION="$RELEASE_TAG"
+          elif [ "$GITHUB_REF_TYPE" = "tag" ]; then
             VERSION="$GITHUB_REF_NAME"
           else
             VERSION="$(grep '^version:' pubspec.yaml | sed 's/version: //; s/+.*//')-$(git rev-parse --short HEAD)"
@@ -102,10 +113,12 @@ jobs:
           path: dist/*
 
       - name: Publish release
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') || inputs.release_tag != ''
         uses: softprops/action-gh-release@v2
         with:
-          name: CashEW ${{ github.ref_name }}
+          tag_name: ${{ inputs.release_tag || github.ref_name }}
+          target_commitish: ${{ github.sha }}
+          name: CashEW ${{ inputs.release_tag || github.ref_name }}
           body_path: .github/release-notes.md
           files: dist/*
           fail_on_unmatched_files: true

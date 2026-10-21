@@ -119,9 +119,9 @@ cleanly.
 Pick `CashEW-…-arm64-v8a.apk` for almost any phone made after 2017, or `CashEW-…-universal.apk`
 if unsure. `SHA256SUMS.txt` lists the checksums.
 
-To publish a new release, push a tag starting with `v` (for example `git tag v5.4.3-ew.2 && git push
-origin v5.4.3-ew.2`); the **Build** workflow builds the APKs and attaches them to a release with the
-notes from `.github/release-notes.md`. Every other push still builds the APKs as a workflow artifact
+To publish a new release: *Actions → Build → Run workflow*, enter a tag such as `v5.4.3-ew.2` and
+run it (or push a tag starting with `v`). The workflow builds the APKs, creates the tag and attaches
+the APKs to a release with the notes from `.github/release-notes.md`. Every other push still builds the APKs as a workflow artifact
 (`cashew-ew-apk`).
 
 > **Signing:** unless the `KEYSTORE_*` secrets below are set, each CI run is signed with a new
