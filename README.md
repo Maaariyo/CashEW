@@ -115,11 +115,14 @@ cleanly.
 
 ## Getting the app
 
-APKs are built by GitHub Actions on every push (see the **Build** workflow, artifact `cashew-ew-apk`)
-and attached to a GitHub release when a `v*` tag is pushed.
+**Download the latest APK from [Releases](https://github.com/Maaariyo/CashEW/releases/latest).**
+Pick `CashEW-…-arm64-v8a.apk` for almost any phone made after 2017, or `CashEW-…-universal.apk`
+if unsure. `SHA256SUMS.txt` lists the checksums.
 
-Pick `app-arm64-v8a-release.apk` for almost any phone made after 2017, or `app-release.apk`
-(universal) if unsure.
+To publish a new release, push a tag starting with `v` (for example `git tag v5.4.3-ew.2 && git push
+origin v5.4.3-ew.2`); the **Build** workflow builds the APKs and attaches them to a release with the
+notes from `.github/release-notes.md`. Every other push still builds the APKs as a workflow artifact
+(`cashew-ew-apk`).
 
 > **Signing:** unless the `KEYSTORE_*` secrets below are set, each CI run is signed with a new
 > throwaway key, so a newer APK will not install over an older one. Set up a signing key before
