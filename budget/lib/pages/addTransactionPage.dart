@@ -592,13 +592,6 @@ class _AddTransactionPageState extends State<AddTransactionPage>
 
       // recentlyAddedTransactionID.value =
 
-      if (widget.transaction == null &&
-          appStateSettings["purchaseID"] == null) {
-        updateSettings("premiumPopupAddTransactionCount",
-            (appStateSettings["premiumPopupAddTransactionCount"] ?? 0) + 1,
-            updateGlobalState: false);
-      }
-
       return true;
     } catch (e) {
       if (e.toString() == "category-no-longer-exists") {
@@ -817,8 +810,12 @@ class _AddTransactionPageState extends State<AddTransactionPage>
       selectedBudgetPk = widget.selectedBudget!.budgetPk;
       selectedPayer = appStateSettings["currentUserEmail"];
       selectedBudgetIsShared = widget.selectedBudget!.sharedKey != null;
-    } else if (widget.transaction == null) {
-      // Trek & Travel: new transactions go to the active trip
+    } else if (widget.transaction == null &&
+        widget.selectedType == null &&
+        widget.selectedIncome != true &&
+        widget.transferBalancePopup == false) {
+      // Trek & Travel: new everyday expenses go to the active trip, not
+      // subscriptions, income or transfers
       getActiveTripForNewTransaction().then((Budget? trip) {
         if (trip == null || mounted == false || selectedBudgetPk != null)
           return;

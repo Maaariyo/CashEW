@@ -57,6 +57,23 @@ void main() {
     expect(parse("60 tea on 30th").title, "Tea");
   });
 
+  test('review fixes', () {
+    // "on 12 oct" is a date in October, not the 12th of this month
+    expect(parse("250 lunch on 12 oct").date, DateTime(2026, 10, 12));
+    expect(parse("250 lunch on 12 oct").title, "Lunch");
+    // Short weekday names are words unless used as dates
+    expect(parse("300 sun cream").date, null);
+    expect(parse("300 sun cream").title, "Sun cream");
+    expect(parse("200 gift on wed").date, DateTime(2026, 11, 11));
+    expect(parse("200 gift last sun").date, DateTime(2026, 11, 15));
+    // A quantity isn't the price
+    expect(parse("2 coffees 120").amount, 120);
+    expect(parse("2 coffees 120").title, "2 coffees");
+    expect(parse("2 coffees ₹120").amount, 120);
+    expect(parse("2 tickets 12.50").amount, 12.5);
+    expect(parse("0 taxi").amount, 0);
+  });
+
   test('category hashtag and filler words', () {
     QuickAddEntry entry = parse("spent 80 on coffee #dining");
     expect(entry.amount, 80);

@@ -49,6 +49,8 @@ Future<InsightsReport> loadInsights(AllWallets allWallets,
             t.type == TransactionSpecialType.debt ||
             t.paid == false,
         isTracked: t.type != null,
+        walletPk: t.walletFk,
+        walletAmount: t.amount,
       ),
   ];
   return buildInsights(list, now: now);
@@ -295,13 +297,18 @@ class RecurringCard extends StatelessWidget {
   Future track(BuildContext context, RecurringCandidate candidate) async {
     TransactionCategory? category =
         await database.getCategoryInstanceOrNull(candidate.categoryPk);
+    // The wallet the payments come from, with the amount in its currency
+    TransactionWallet? wallet = Provider.of<AllWallets>(context, listen: false)
+        .indexedByPk[candidate.walletPk];
     await pushRoute(
       context,
       AddTransactionPage(
         routesToPopAfterDelete: RoutesToPopAfterDelete.None,
         selectedType: TransactionSpecialType.subscription,
         selectedTitle: candidate.title,
-        selectedAmount: candidate.lastAmount,
+        selectedAmount:
+            wallet == null ? candidate.lastAmount : candidate.lastWalletAmount,
+        selectedWallet: wallet,
         selectedIncome: false,
         selectedCategory: category,
         selectedDate: candidate.nextExpected,

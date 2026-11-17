@@ -36,8 +36,7 @@ void main() {
     );
   });
 
-  test('balance is the end of day balance, including non activity entries',
-      () {
+  test('balance is the end of day balance, including non activity entries', () {
     List<DailyLogDay> days = buildDailyLogDays([
       DailyLogEntry(
           date: DateTime(2026, 10, 17, 12),

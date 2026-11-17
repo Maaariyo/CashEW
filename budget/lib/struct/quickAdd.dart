@@ -6,6 +6,8 @@
 //   80 coffee #dining          category Dining
 //   450 dinner on friday       the most recent Friday
 //   1,299 shoes 12 nov         12 November (last year if that's in the future)
+//   2 coffees 120              120: a number marked as money (₹, \$, k, decimals)
+//                              wins, otherwise the largest one
 //
 // Pure Dart so it can be unit tested.
 
@@ -121,7 +123,10 @@ QuickAddEntry parseQuickAdd(String input, {required DateTime now}) {
       date = today;
     } else if (word == "yesterday" || word == "yday") {
       date = today.subtract(Duration(days: 1));
-    } else if (_weekdays.containsKey(word)) {
+    } else if (_weekdays.containsKey(word) &&
+        // Short forms only after "on" or "last", so "sun cream" stays a title
+        (word.length > 4 ||
+            (i > 0 && (lower(i - 1) == "on" || lower(i - 1) == "last")))) {
       int back = (today.weekday - _weekdays[word]! + 7) % 7;
       if (i > 0 && lower(i - 1) == "last") {
         if (back == 0) back = 7;
@@ -153,7 +158,9 @@ QuickAddEntry parseQuickAdd(String input, {required DateTime now}) {
       }
     } else if (word == "on" &&
         i + 1 < tokens.length &&
-        _dayOfMonthPattern.hasMatch(lower(i + 1))) {
+        _dayOfMonthPattern.hasMatch(lower(i + 1)) &&
+        // "on 12 oct" is handled by the month branch
+        (i + 2 >= tokens.length || !_months.containsKey(lower(i + 2)))) {
       // "on 5th": that day this month, or last month if it's in the future
       int day =
           int.parse(_dayOfMonthPattern.firstMatch(lower(i + 1))!.group(1)!);
@@ -180,22 +187,35 @@ QuickAddEntry parseQuickAdd(String input, {required DateTime now}) {
     }
   }
 
-  // Amount: the first token that looks like one
+  // Amount: the first number marked as money (sign, currency, k or
+  // decimals), otherwise the largest number, since a quantity such as
+  // "2 coffees 120" is smaller than its price
   double? amount;
   bool? explicitIncome;
+  int? amountIndex;
+  bool amountMarked = false;
   for (int i = 0; i < tokens.length; i++) {
     Match? match = _amountPattern.firstMatch(tokens[i]);
     if (match == null) continue;
     double? value = double.tryParse(match.group(3)!.replaceAll(",", ""));
     if (value == null) continue;
     if (match.group(4) != null) value *= 1000;
+    bool marked = !RegExp(r'^\d+$').hasMatch(tokens[i]);
+    bool better = amount == null ||
+        (marked && !amountMarked) ||
+        (marked == amountMarked && !amountMarked && value > amount);
+    if (!better) continue;
     amount = value;
+    amountIndex = i;
+    amountMarked = marked;
     String? sign = match.group(1) ?? match.group(2);
-    if (sign == "+") explicitIncome = true;
-    if (sign == "-") explicitIncome = false;
-    tokens.removeAt(i);
-    break;
+    explicitIncome = sign == "+"
+        ? true
+        : sign == "-"
+            ? false
+            : null;
   }
+  if (amountIndex != null) tokens.removeAt(amountIndex);
 
   while (tokens.isNotEmpty && _fillerWords.contains(tokens.first.toLowerCase()))
     tokens.removeAt(0);

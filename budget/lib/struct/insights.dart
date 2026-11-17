@@ -15,10 +15,15 @@ class InsightTransaction {
     required this.categoryName,
     this.isTransfer = false,
     this.isTracked = false,
-  });
+    this.walletPk = "",
+    double? walletAmount,
+  }) : walletAmount = walletAmount ?? amount;
   final DateTime date;
-  // Signed, expenses are negative
+  // Signed, expenses are negative, in the primary currency
   final double amount;
+  // The wallet it belongs to, and the amount in that wallet's currency
+  final String walletPk;
+  final double walletAmount;
   final String title;
   final String categoryPk;
   final String categoryName;
@@ -87,12 +92,18 @@ class RecurringCandidate {
     required this.occurrences,
     required this.cadence,
     required this.lastDate,
+    required this.walletPk,
+    required this.lastWalletAmount,
   });
   final String title;
   final String categoryPk;
   final double averageAmount;
   // What the next payment will most likely be, prices change
   final double lastAmount;
+  // Where the payments are made, so a subscription is linked to the same
+  // wallet, with the amount in that wallet's currency
+  final String walletPk;
+  final double lastWalletAmount;
   final int occurrences;
   final RecurringCadence cadence;
   final DateTime lastDate;
@@ -304,6 +315,8 @@ List<RecurringCandidate> findRecurring(List<InsightTransaction> transactions,
       occurrences: payments.length,
       cadence: cadence,
       lastDate: last,
+      walletPk: payments.last.walletPk,
+      lastWalletAmount: payments.last.walletAmount.abs(),
     ));
   }
   candidates.sort((a, b) => b.averageAmount.compareTo(a.averageAmount));

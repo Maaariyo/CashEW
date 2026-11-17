@@ -9,7 +9,6 @@ import 'package:budget/database/tables.dart';
 import 'package:budget/struct/dailyLog.dart';
 import 'package:budget/struct/databaseGlobal.dart';
 import 'package:budget/struct/settings.dart';
-import 'package:drift/drift.dart' hide Column;
 
 // Categories with this key are balance corrections and transfers
 const String balanceCorrectionCategoryPk = "0";
@@ -131,30 +130,32 @@ Future<List<DailyLogAccount>> loadDailyLogs({String? tripBudgetPk}) async {
         in await database.getAllCategories(includeSubCategories: true))
       category.categoryPk: category.name
   };
+  // One query for every wallet, grouped here
+  Map<String, List<DailyLogEntry>> entriesByWallet = {};
+  for (Transaction transaction in await (database.select(database.transactions)
+        ..where((t) => t.paid.equals(true)))
+      .get()) {
+    entriesByWallet.putIfAbsent(transaction.walletFk, () => []).add(
+          DailyLogEntry(
+            date: transaction.dateCreated,
+            amount: transaction.amount,
+            name: transaction.name.trim() != ""
+                ? transaction.name.trim()
+                : (categoryNames[transaction.categoryFk] ?? ""),
+            isActivity: transaction.income == false &&
+                transaction.amount < 0 &&
+                transaction.categoryFk != balanceCorrectionCategoryPk &&
+                (tripBudgetPk == null ||
+                    transaction.sharedReferenceBudgetPk == tripBudgetPk),
+          ),
+        );
+  }
   List<DailyLogAccount> accounts = [];
   for (TransactionWallet wallet in await database.getAllWallets()) {
-    List<Transaction> transactions = await (database.select(
-            database.transactions)
-          ..where((t) =>
-              t.walletFk.equals(wallet.walletPk) & t.paid.equals(true)))
-        .get();
-    List<DailyLogEntry> entries = [
-      for (Transaction transaction in transactions)
-        DailyLogEntry(
-          date: transaction.dateCreated,
-          amount: transaction.amount,
-          name: transaction.name.trim() != ""
-              ? transaction.name.trim()
-              : (categoryNames[transaction.categoryFk] ?? ""),
-          isActivity: transaction.income == false &&
-              transaction.amount < 0 &&
-              transaction.categoryFk != balanceCorrectionCategoryPk &&
-              (tripBudgetPk == null ||
-                  transaction.sharedReferenceBudgetPk == tripBudgetPk),
-        ),
-    ];
-    List<DailyLogDay> days = buildDailyLogDays(entries);
-    if (days.isNotEmpty) accounts.add(DailyLogAccount(wallet: wallet, days: days));
+    List<DailyLogDay> days =
+        buildDailyLogDays(entriesByWallet[wallet.walletPk] ?? []);
+    if (days.isNotEmpty)
+      accounts.add(DailyLogAccount(wallet: wallet, days: days));
   }
   return accounts;
 }

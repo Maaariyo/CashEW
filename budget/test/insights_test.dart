@@ -97,6 +97,24 @@ void main() {
       expect(found.first.lastAmount, 209);
     });
 
+    test('remembers the wallet and its own amount', () {
+      List<RecurringCandidate> found = findRecurring([
+        for (int month = 8; month <= 11; month++)
+          InsightTransaction(
+            date: DateTime(2026, month, 3),
+            amount: -11.0,
+            walletAmount: -10.0,
+            walletPk: "euro-card",
+            title: "Spotify",
+            categoryPk: "fun",
+            categoryName: "Fun",
+          ),
+      ], now: now);
+      expect(found.single.walletPk, "euro-card");
+      expect(found.single.lastWalletAmount, 10);
+      expect(found.single.lastAmount, 11);
+    });
+
     test('weekly payment', () {
       List<RecurringCandidate> found = findRecurring([
         for (int week = 0; week < 5; week++)

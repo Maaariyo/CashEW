@@ -77,28 +77,37 @@ class _QuickAddPageState extends State<QuickAddPage> {
     if (mounted && entry == parsed) setState(() => guessedCategory = name);
   }
 
+  bool canAdd(QuickAddEntry? entry) => (entry?.amount ?? 0) > 0;
+
   Future add() async {
     QuickAddEntry? current = entry;
-    if (current == null || current.amount == null || saving) return;
+    if (current == null || !canAdd(current) || saving) return;
     setState(() => saving = true);
-    DateTime now = DateTime.now();
-    DateTime? date = current.date == null
-        ? null
-        : DateTime(current.date!.year, current.date!.month, current.date!.day,
-            now.hour, now.minute, now.second);
-    Transaction? transaction = await processAddTransactionFromParams(context, {
-      "amount": current.signedAmount.toString(),
-      if (current.title != "") "title": current.title,
-      if (date != null) "date": date.toIso8601String(),
-      if (current.category != null) "category": current.category,
-    });
-    // Trek & Travel: also add it to the active trip
-    if (transaction != null && activeTrip != null && current.income == false) {
-      Transaction withTrip = transaction.copyWith(
-          sharedReferenceBudgetPk: Value(activeTrip!.budgetPk));
-      await database.createOrUpdateTransaction(withTrip,
-          originalTransaction: transaction);
-      transaction = withTrip;
+    Transaction? transaction;
+    try {
+      DateTime now = DateTime.now();
+      DateTime? date = current.date == null
+          ? null
+          : DateTime(current.date!.year, current.date!.month, current.date!.day,
+              now.hour, now.minute, now.second);
+      transaction = await processAddTransactionFromParams(context, {
+        "amount": current.signedAmount.toString(),
+        if (current.title != "") "title": current.title,
+        if (date != null) "date": date.toIso8601String(),
+        if (current.category != null) "category": current.category,
+      });
+      // Trek & Travel: also add it to the active trip
+      if (transaction != null &&
+          activeTrip != null &&
+          current.income == false) {
+        Transaction withTrip = transaction.copyWith(
+            sharedReferenceBudgetPk: Value(activeTrip!.budgetPk));
+        await database.createOrUpdateTransaction(withTrip,
+            originalTransaction: transaction);
+        transaction = withTrip;
+      }
+    } catch (e) {
+      print("Quick Add failed: " + e.toString());
     }
     if (!mounted) return;
     setState(() {
@@ -178,11 +187,10 @@ class _QuickAddPageState extends State<QuickAddPage> {
           padding: const EdgeInsetsDirectional.symmetric(
               horizontal: 13, vertical: 8),
           child: Opacity(
-            opacity: current?.amount != null && !saving ? 1 : 0.5,
+            opacity: canAdd(current) && !saving ? 1 : 0.5,
             child: Button(
-              label: current?.amount == null && current != null
-                  ? "Add an amount"
-                  : "Add",
+              label:
+                  current != null && !canAdd(current) ? "Add an amount" : "Add",
               expandedLayout: true,
               onTap: add,
             ),
