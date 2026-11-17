@@ -8,6 +8,8 @@ import 'package:budget/pages/creditDebtTransactionsPage.dart';
 import 'package:budget/pages/editHomePage.dart';
 import 'package:budget/pages/dailyLogPage.dart';
 import 'package:budget/pages/trekTravelPage.dart';
+import 'package:budget/pages/insightsPage.dart';
+import 'package:budget/pages/quickAddPage.dart';
 import 'package:budget/pages/editObjectivesPage.dart';
 import 'package:budget/pages/homePage/homePageNetWorth.dart';
 import 'package:budget/pages/objectivesListPage.dart';
@@ -315,6 +317,32 @@ class MorePages extends StatelessWidget {
                     icon: appStateSettings["outlinedIcons"]
                         ? Icons.receipt_long_outlined
                         : Icons.receipt_long_rounded,
+                    isOutlined: true,
+                  ),
+                ),
+              ],
+            ),
+          if (hasSideNavigation == false)
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Expanded(
+                  child: SettingsContainerOpenPage(
+                    openPage: InsightsPage(),
+                    title: "Insights",
+                    icon: appStateSettings["outlinedIcons"]
+                        ? Icons.insights_outlined
+                        : Icons.insights_rounded,
+                    isOutlined: true,
+                  ),
+                ),
+                Expanded(
+                  child: SettingsContainerOpenPage(
+                    openPage: QuickAddPage(),
+                    title: "Quick Add",
+                    icon: appStateSettings["outlinedIcons"]
+                        ? Icons.bolt_outlined
+                        : Icons.bolt_rounded,
                     isOutlined: true,
                   ),
                 ),

@@ -1,4 +1,4 @@
-CashEW is an open source fork of [Cashew](https://github.com/jameskokoska/Cashew) with every Cashew Pro feature unlocked, the Boho Glass / Boho Night design, Trek & Travel trips and copyable daily expense logs. See the [README](https://github.com/Maaariyo/CashEW#readme) for details.
+CashEW is an open source fork of [Cashew](https://github.com/jameskokoska/Cashew) with every Cashew Pro feature unlocked, the Boho Glass / Boho Night design, Insights (month-to-date comparison, projections and undetected recurring payments), Quick Add (log a transaction by typing "250 taxi yesterday"), Trek & Travel trips and copyable daily expense logs. See the [README](https://github.com/Maaariyo/CashEW#readme) for details.
 
 ## Which file to download
 

@@ -63,6 +63,47 @@ your data or the app's state. Two skins ship today:
 - Skins live in `budget/lib/skins/`. To add one, implement the `AppSkin` interface and register
   it; see [`docs/SKINS.md`](docs/SKINS.md).
 
+## Insights
+
+*More Actions → Insights*, inspired by Copilot, Monarch and Rocket Money. Cashew already shows
+*what* you spent; Insights shows what changed and what's coming:
+
+- **This month**: spending from the 1st until today, compared with the same point last month (a fair
+  comparison mid-month), plus a projection of the month's total at the current pace.
+- **Biggest changes**: the categories that went up or down most against the same point last month.
+- **Looks recurring**: payments with the same title, a steady amount and a weekly, fortnightly or
+  monthly rhythm that aren't tracked as subscriptions yet. *Track* opens a subscription pre-filled
+  with the latest amount and the next expected date, so it shows up in Subscriptions and reminders.
+- **Where it went**: top payees this month, by title.
+- **Spending by weekday**: average spend per weekday over the last 8 weeks.
+
+Amounts are converted to your primary currency. Transfers, balance corrections, loans and unpaid
+upcoming transactions don't count as spending.
+
+## Quick Add
+
+*More Actions → Quick Add*, inspired by Spendee, Monefy and Walnut: log a transaction by typing one
+line. A preview shows exactly what will be saved.
+
+| You type | You get |
+|---|---|
+| `250 taxi` | Expense of 250, "Taxi", today |
+| `+50000 salary` | Income (a `+`, or words like salary, refund, cashback) |
+| `1.2k groceries yesterday` | 1,200, yesterday |
+| `450 dinner on friday` | The most recent Friday (`last friday` for the week before) |
+| `1,299 shoes 12 nov` | 12 November; dates in the future mean last year |
+| `60 tea on 5th`, `300 cab 3 days ago` | Day of this month, or days back |
+| `80 coffee #dining` | Category Dining |
+
+Amounts can include ₹, $, €, £, "rs" or "/-". Without a `#category`, Quick Add uses the category of
+titles you've used before (the same learning Cashew uses when you type a title) and otherwise asks
+when you add it. It uses your selected wallet and adds expenses to the active Trek & Travel trip.
+The field stays open so you can log several in a row.
+
+| Insights | Looks recurring | Quick Add | Dark |
+|---|---|---|---|
+| ![](docs/screenshots/insights.jpg) | ![](docs/screenshots/insights-recurring.jpg) | ![](docs/screenshots/quick-add.jpg) | ![](docs/screenshots/night-insights.jpg) |
+
 ## Trek & Travel
 
 *More Actions → Trek & Travel.* A trip has its own book of expenses, but every transaction in it is a
